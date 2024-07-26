@@ -1,51 +1,10 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Lancer une preview</title>
-  <script src="https://static.trello.com/power-up.min.js"></script>
-  <script src="./index.js" defer></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 10px;
-      max-width: 300px;
-    }
-    .checkbox-group {
-      margin-bottom: 10px;
-    }
-  </style>
-</head>
-<body>
-  <div>
-    <div class="checkbox-group">
-      <label>
-        <input type="checkbox" id="ft" name="ft" />
-        FT
-      </label>
-    </div>
-    <div class="checkbox-group">
-      <label>
-        <input type="checkbox" id="mabl" name="mabl" />
-        MABL
-      </label>
-    </div>
-    <button id="submit">Lancer la preview</button>
-  </div>
-  <script>
-    document.getElementById('submit').addEventListener('click', function () {
-      const ft = document.getElementById('ft').checked;
-      const mabl = document.getElementById('mabl').checked;
-
-      const data = {
-        ft: ft,
-        mabl: mabl
-      };
-
-      console.log('Submitted data:', data);
-
-      // You can use `t.set` or other methods to handle data if needed
-      t.closePopup();
-    });
-  </script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script src="/index.js"></script>
+  </body>
 </html>
