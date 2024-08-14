@@ -2,7 +2,7 @@ TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return [
       {
-        icon: "https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a%2Frocket-ship.png?1494946700421",
+        icon: "https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a/rocket-ship.png?1494946700421",
         text: "Lancer une preview",
         callback: function (t) {
           return t.popup({
@@ -60,25 +60,31 @@ function getCustomFieldValue(customFieldItems, customFieldId) {
 }
 
 function generateBadges(mergeRequest, branchName) {
-  const badges = [];
+  const gitlabUrl = `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`;
+  const jenkinsUrl = `https://n8n.tools.i-we.io/webhook/6bc11b9a-a602-437b-b021-7a40032c06c2?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`;
 
-  badges.push({
-    dynamic: () => ({
-      text: `${mergeRequest.name} - Jenkins`,
-      icon: 'https://example.com/jenkins-icon.png',
-      refresh: 10,
-      url: `https://img.shields.io/endpoint?url=https%3A%2F%2Fn8n.tools.i-we.io%2Fwebhook%2F6bc11b9a-a602-437b-b021-7a40032c06c2%3Frepository%3Diwe-ui%26branch%3D${branchName}%26merge_request_id%3D${mergeRequest.id}`,
-    })
-  });
-
-  badges.push({
-    dynamic: () => ({
-      text: `${mergeRequest.name} - GitLab`,
-      icon: 'https://example.com/gitlab-icon.png',
-      refresh: 10,
-      url: `https://img.shields.io/endpoint?url=https%3A%2F%2Fn8n.tools.i-we.io%2Fwebhook%2F9d86d521-93c9-4e2f-90b5-7e4187c2cc9c%3Frepository%3Diwe-ui%26branch%3D${branchName}%26merge_request_id%3D${mergeRequest.id}`,
-    })
-  });
-
-  return badges;
+  return [
+    {
+      dynamic: async () => {
+        const response = await fetch(jenkinsUrl);
+        return {
+          title: `${mergeRequest.name} - Jenkins`,
+          text: response.body.message,
+          color: response.body.color,
+          refresh: 10
+        }
+      }
+    },
+    {
+      dynamic: async () => {
+        const response = await fetch(gitlabUrl);
+        return {
+          title: `${mergeRequest.name} - GitLab`,
+          text: response.body.message,
+          color: response.body.color,
+          refresh: 10
+        }
+      }
+    }
+  ];
 }
