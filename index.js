@@ -29,11 +29,9 @@ TrelloPowerUp.initialize({
         // Retrieve necessary custom field value
         const branchName = getCustomFieldValue(customFieldItems, '66a7b730211062b563b92f53');
         
-        console.log(mergeRequests);
         // Generate badges for each merge request
         const badges = mergeRequests.flatMap(mr => generateBadges(mr, branchName));
 
-        console.log(badges);
         return badges;
       });
   } 
@@ -69,8 +67,8 @@ function generateBadges(mergeRequest, branchName) {
   return [
     {
       dynamic: async () => {
-        console.log(jenkinsUrl);
         const response = await fetch(jenkinsUrl);
+        console.log(response);
         return {
           title: `${mergeRequest.name} - Jenkins`,
           text: response.body.message,
@@ -81,8 +79,8 @@ function generateBadges(mergeRequest, branchName) {
     },
     {
       dynamic: async () => {
-        console.log(gitlabUrl);
         const response = await fetch(gitlabUrl);
+        console.log(response);
         return {
           title: `${mergeRequest.name} - GitLab`,
           text: response.body.message,
