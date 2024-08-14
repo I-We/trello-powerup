@@ -32,8 +32,8 @@ TrelloPowerUp.initialize({
         const branchNameBadge = branchName ? {
           title: 'Branch',
           text: branchName,
-          callback: async () => {
-            await navigator.clipboard.writeText(branchName);
+          callback: () => {
+            copyTextToClipboard(branchName);
             t.alert({
               message: "Branch name has been copied to your clipboard !"
             })
@@ -106,4 +106,24 @@ function generateStatusBadges(mergeRequest, branchName) {
 function sanitize(str) {
   // Remove common invisible characters, including Zero Width Non-Joiner and Zero Width Space
   return str.replace(/[\u200C\u200B]/g, '').trim();
+}
+
+function copyTextToClipboard(text) {
+  // Create a temporary textarea element
+  const tempTextArea = document.createElement('textarea');
+  
+  // Set the textarea's value to the text you want to copy
+  tempTextArea.value = text;
+  
+  // Add the textarea to the document body
+  document.body.appendChild(tempTextArea);
+  
+  // Select the text in the textarea
+  tempTextArea.select();
+  
+  // Execute the copy command
+  document.execCommand('copy');
+  
+  // Remove the textarea from the document
+  document.body.removeChild(tempTextArea);
 }
