@@ -3,35 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Copy and Close</title>
+  <title>Copy and Monitor</title>
   <script>
-    function getQueryParameter(name) {
+    async function getQueryParameter(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
     }
 
-    function copyToClipboard(value) {
-      return navigator.clipboard.writeText(value);
+    async function copyToClipboard(value) {
+      try {
+        await navigator.clipboard.writeText(value);
+        console.log('Text copied to clipboard successfully.');
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+      }
     }
 
-    window.onload = function() {
-      const valueToCopy = getQueryParameter('value');
+    async function checkClipboard(expectedValue) {
+      try {
+        const text = await navigator.clipboard.readText();
+        return text === expectedValue;
+      } catch (err) {
+        console.error('Failed to read clipboard: ', err);
+        return false;
+      }
+    }
+
+    window.onload = async function() {
+      const valueToCopy = await getQueryParameter('value');
       if (valueToCopy) {
-        copyToClipboard(valueToCopy)
-          .then(() => {
-            console.log('Text copied to clipboard successfully.');
+        await copyToClipboard(valueToCopy);
+
+        const checkInterval = 500; // Check every 500 milliseconds
+        const maxAttempts = 60; // Maximum number of attempts (30 seconds)
+
+        let attempts = 0;
+        const intervalId = setInterval(async () => {
+          const isMatching = await checkClipboard(valueToCopy);
+          if (isMatching) {
+            clearInterval(intervalId);
             window.close();
-          })
-          .catch(err => {
-            console.error('Failed to copy text: ', err);
-          });
+          } else {
+            attempts += 1;
+            if (attempts >= maxAttempts) {
+              clearInterval(intervalId);
+              window.close();
+            }
+          }
+        }, checkInterval);
       } else {
-        console.error('Nothing to copy');
+        window.close();
       }
     };
   </script>
 </head>
 <body>
-  <p>Copying value to clipboard...</p>
+  <p>Copying value to clipboard and monitoring...</p>
 </body>
 </html>
