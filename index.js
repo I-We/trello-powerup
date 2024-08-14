@@ -45,9 +45,9 @@ function parseMergeRequests(header) {
   const regex = /\• \[([^\]]+)\]\(([^)]+)\)/g;
   let match;
   const mergeRequests = [];
-  const cleanedUrl = match[2].replace(/["\s]/g, '');
 
   while (match = regex.exec(header)) {
+    const cleanedUrl = match[2].replace(/["\s]/g, '');
     mergeRequests.push({
       name: match[1],
       url: cleanedUrl,
