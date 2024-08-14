@@ -20,7 +20,6 @@ TrelloPowerUp.initialize({
         if (sections.length < 2) {
           return [];
         }
-        console.log('there are several sections');
         const header = sections[0];
         const customFieldItems = card.customFieldItems;
         
@@ -30,10 +29,10 @@ TrelloPowerUp.initialize({
         // Retrieve necessary custom field value
         const branchName = getCustomFieldValue(customFieldItems, '66a7b730211062b563b92f53');
         
+        console.log(mergeRequests);
         // Generate badges for each merge request
         const badges = mergeRequests.flatMap(mr => generateBadges(mr, branchName));
 
-        console.log('returning badges');
         console.log(badges);
         return badges;
       });
