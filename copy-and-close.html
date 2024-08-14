@@ -10,10 +10,22 @@
       return urlParams.get(name);
     }
 
+    function copyToClipboard(value) {
+      const el = document.createElement('textarea');
+      el.value = value;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+    }
+
     window.onload = function() {
       const valueToCopy = getQueryParameter('value');
       if (valueToCopy) {
-        navigator.clipboard.writeText(valueToCopy);
+        copyToClipboard(valueToCopy);
       }
       window.close();
     };
