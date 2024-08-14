@@ -32,8 +32,8 @@ TrelloPowerUp.initialize({
         const branchNameBadge = branchName ? {
           title: 'Branch',
           text: branchName,
-          callback: () => {
-            navigator.clipboard.writeText(branchName);
+          callback: async () => {
+            await navigator.clipboard.writeText(branchName);
             t.alert({
               message: "Branch name has been copied to your clipboard !"
             })
