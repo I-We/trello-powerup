@@ -51,7 +51,7 @@ function parseMergeRequests(header) {
     mergeRequests.push({
       name: match[1],
       url: cleanedUrl,
-      id: cleanedUrl.slice(-1)
+      id: cleanedUrl.split('/').slice(-1)
     });
   }
 
