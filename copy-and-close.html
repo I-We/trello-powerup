@@ -34,8 +34,8 @@
       if (valueToCopy) {
         await copyToClipboard(valueToCopy);
 
-        const checkInterval = 500; // Check every 500 milliseconds
-        const maxAttempts = 60; // Maximum number of attempts (30 seconds)
+        const checkInterval = 50; // Check every 50 milliseconds
+        const maxAttempts = 60; // Maximum number of attempts (3 seconds)
 
         let attempts = 0;
         const intervalId = setInterval(async () => {

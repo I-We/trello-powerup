@@ -32,7 +32,10 @@ TrelloPowerUp.initialize({
         const branchNameBadge = branchName ? {
           title: 'Branch',
           text: branchName,
-          url: `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`
+          url: `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`,
+          callback: () => {
+            t.alert({message: "Branch name has been copied to your clipboard !"})
+          }
         } : null;
 
         // Generate status badges for each merge request
