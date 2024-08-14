@@ -31,7 +31,7 @@ TrelloPowerUp.initialize({
         const branchName = getCustomFieldValue(customFieldItems, '66a7b730211062b563b92f53');
         
         // Generate badges for each merge request
-        const badges = mergeRequests.map(mr => generateBadges(mr, branchName));
+        const badges = mergeRequests.flatMap(mr => generateBadges(mr, branchName));
 
         console.log('returning badges');
         console.log(badges);
