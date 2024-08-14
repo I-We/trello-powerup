@@ -45,12 +45,13 @@ function parseMergeRequests(header) {
   const regex = /\• \[([^\]]+)\]\(([^)]+)\)/g;
   let match;
   const mergeRequests = [];
+  const cleanedUrl = match[2].replace(/["\s]/g, '');
 
   while (match = regex.exec(header)) {
     mergeRequests.push({
       name: match[1],
-      url: match[2],
-      id: match[2].slice(-1)
+      url: cleanedUrl,
+      id: cleanedUrl.slice(-1)
     });
   }
 
@@ -81,6 +82,7 @@ function generateBadges(mergeRequest, branchName) {
     {
       dynamic: async () => {
         const response = await fetch(gitlabUrl);
+        console.log(response);
         return {
           title: `${mergeRequest.name} - GitLab`,
           text: response.body.message,
