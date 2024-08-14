@@ -33,7 +33,7 @@ TrelloPowerUp.initialize({
           title: 'Branch',
           text: branchName,
           callback: () => {
-            copyTextToClipboard(branchName);
+            copyToClipboard(branchName);
             t.alert({
               message: "Branch name has been copied to your clipboard !"
             })
@@ -108,22 +108,22 @@ function sanitize(str) {
   return str.replace(/[\u200C\u200B]/g, '').trim();
 }
 
-function copyTextToClipboard(text) {
-  // Create a temporary textarea element
-  const tempTextArea = document.createElement('textarea');
-  
-  // Set the textarea's value to the text you want to copy
-  tempTextArea.value = text;
-  
-  // Add the textarea to the document body
-  document.body.appendChild(tempTextArea);
-  
-  // Select the text in the textarea
-  tempTextArea.select();
-  
-  // Execute the copy command
+const copyToClipboard = str => {
+  const el = document.createElement('textarea');
+  el.value = str;
+  el.setAttribute('readonly', '');
+  el.style.position = 'absolute';
+  el.style.left = '-9999px';
+  document.body.appendChild(el);
+  const selected =
+    document.getSelection().rangeCount > 0
+      ? document.getSelection().getRangeAt(0)
+      : false;
+  el.select();
   document.execCommand('copy');
-  
-  // Remove the textarea from the document
-  document.body.removeChild(tempTextArea);
-}
+  document.body.removeChild(el);
+  if (selected) {
+    document.getSelection().removeAllRanges();
+    document.getSelection().addRange(selected);
+  }
+};
