@@ -63,8 +63,8 @@ function getCustomFieldValue(customFieldItems, customFieldId) {
 }
 
 function generateBadges(mergeRequest, branchName) {
-  const gitlabUrl = `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`;
-  const jenkinsUrl = `https://n8n.tools.i-we.io/webhook/6bc11b9a-a602-437b-b021-7a40032c06c2?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`;
+  const gitlabUrl = cleanUrl(`https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`);
+  const jenkinsUrl = cleanUrl(`https://n8n.tools.i-we.io/webhook/6bc11b9a-a602-437b-b021-7a40032c06c2?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`);
 
   return [
     {
@@ -90,4 +90,20 @@ function generateBadges(mergeRequest, branchName) {
       }
     }
   ];
+}
+
+function sanitizeString(str) {
+  // Remove common invisible characters, including Zero Width Non-Joiner and Zero Width Space
+  return str.replace(/[\u200C\u200B]/g, '').trim();
+}
+
+function cleanUrl(url) {
+  // Decode URL to get the raw string
+  let decodedUrl = decodeURIComponent(url);
+  
+  // Remove unwanted characters
+  decodedUrl = sanitizeString(decodedUrl);
+  
+  // Encode URL back to ensure proper formatting
+  return encodeURIComponent(decodedUrl);
 }
