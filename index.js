@@ -46,11 +46,11 @@ function parseMergeRequests(header) {
   const mergeRequests = [];
 
   while (match = regex.exec(header)) {
-    const cleanedUrl = match[2].replace(/["\s]/g, '');
+    const cleanedUrl = match[2].replace(/["\s]/g, '').trim();
     mergeRequests.push({
-      name: match[1].trim(),
-      url: cleanedUrl.trim(),
-      id: cleanedUrl.split('/').pop().trim()
+      name: match[1],
+      url: cleanedUrl,
+      id: cleanedUrl.split('/').pop()
     });
   }
 
