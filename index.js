@@ -33,7 +33,6 @@ TrelloPowerUp.initialize({
           title: 'Branch',
           text: branchName,
           url: `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`,
-          target: 'Copy and Close',
           callback: () => {
             t.alert({
               message: "Branch name has been copied to your clipboard !"
