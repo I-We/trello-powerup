@@ -29,10 +29,21 @@ TrelloPowerUp.initialize({
         // Retrieve necessary custom field value
         const branchName = getCustomFieldValue(customFieldItems, '66a7b730211062b563b92f53');
         
-        // Generate badges for each merge request
-        const badges = mergeRequests.flatMap(mr => generateBadges(mr, branchName));
+        const branchNameBadge = branchName ? {
+          title: 'Branch',
+          text: branchName,
+          callback: () => {
+            navigator.clipboard.writeText(branchName);
+            t.alert({
+              message: "Branch name has been copied to your clipboard !"
+            })
+          }
+        } : null;
 
-        return badges;
+        // Generate status badges for each merge request
+        const statusBadges = mergeRequests.flatMap(mr => generateStatusBadges(mr, branchName));
+
+        return [branchNameBadge, ...statusBadges].filter(Boolean);
       });
   } 
 });
@@ -60,7 +71,7 @@ function getCustomFieldValue(customFieldItems, customFieldId) {
   return field ? field.value.text : null;
 }
 
-function generateBadges(mergeRequest, branchName) {
+function generateStatusBadges(mergeRequest, branchName) {
   const gitlabUrl = sanitize(`https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`);
   const jenkinsUrl = sanitize(`https://n8n.tools.i-we.io/webhook/6bc11b9a-a602-437b-b021-7a40032c06c2?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`);
 
