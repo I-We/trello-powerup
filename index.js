@@ -17,7 +17,7 @@ TrelloPowerUp.initialize({
     return t.card('desc', 'customFieldItems')
       .then(function(card) {
         const sections = card.desc.split('---');
-        if (sections.length !== 2) {
+        if (sections.length < 2) {
           return [];
         }
         const header = sections[0];
