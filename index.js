@@ -69,6 +69,7 @@ function generateBadges(mergeRequest, branchName) {
   return [
     {
       dynamic: async () => {
+        console.log(jenkinsUrl);
         const response = await fetch(jenkinsUrl);
         return {
           title: `${mergeRequest.name} - Jenkins`,
@@ -80,6 +81,7 @@ function generateBadges(mergeRequest, branchName) {
     },
     {
       dynamic: async () => {
+        console.log(gitlabUrl);
         const response = await fetch(gitlabUrl);
         return {
           title: `${mergeRequest.name} - GitLab`,
