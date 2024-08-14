@@ -32,8 +32,9 @@ TrelloPowerUp.initialize({
         const branchNameBadge = branchName ? {
           title: 'Branch',
           text: branchName,
+          url: `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`,
+          target: 'Copy and Close',
           callback: () => {
-            copyToClipboard(branchName);
             t.alert({
               message: "Branch name has been copied to your clipboard !"
             })
@@ -107,23 +108,3 @@ function sanitize(str) {
   // Remove common invisible characters, including Zero Width Non-Joiner and Zero Width Space
   return str.replace(/[\u200C\u200B]/g, '').trim();
 }
-
-const copyToClipboard = str => {
-  const el = document.createElement('textarea');
-  el.value = str;
-  el.setAttribute('readonly', '');
-  el.style.position = 'absolute';
-  el.style.left = '-9999px';
-  document.body.appendChild(el);
-  const selected =
-    document.getSelection().rangeCount > 0
-      ? document.getSelection().getRangeAt(0)
-      : false;
-  el.select();
-  document.execCommand('copy');
-  document.body.removeChild(el);
-  if (selected) {
-    document.getSelection().removeAllRanges();
-    document.getSelection().addRange(selected);
-  }
-};

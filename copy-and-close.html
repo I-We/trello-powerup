@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copy and Close</title>
+  <script>
+    function getQueryParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    window.onload = function() {
+      const valueToCopy = getQueryParameter('value');
+      if (valueToCopy) {
+        navigator.clipboard.writeText(valueToCopy);
+      }
+      window.close();
+    };
+  </script>
+</head>
+<body>
+  <p>Copying value to clipboard...</p>
+</body>
+</html>
