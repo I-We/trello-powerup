@@ -10,12 +10,26 @@
       return urlParams.get(name);
     }
 
+    function copyToClipboard(value) {
+      return navigator.clipboard.writeText(value);
+    }
+
     window.onload = function() {
       const valueToCopy = getQueryParameter('value');
       if (valueToCopy) {
-        navigator.clipboard.writeText(valueToCopy);
+        copyToClipboard(valueToCopy)
+          .then(() => {
+            console.log('Text copied to clipboard successfully.');
+            window.close();
+          })
+          .catch(err => {
+            console.error('Failed to copy text: ', err);
+            // Optionally, close the window even if copying fails
+            window.close();
+          });
+      } else {
+        window.close();
       }
-      window.close();
     };
   </script>
 </head>
