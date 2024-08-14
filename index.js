@@ -68,11 +68,11 @@ function generateBadges(mergeRequest, branchName) {
     {
       dynamic: async () => {
         const response = await fetch(jenkinsUrl);
-        console.log(response);
+        const body = await response.json();
         return {
           title: `${mergeRequest.name} - Jenkins`,
-          text: response.body.message,
-          color: response.body.color,
+          text: body.message,
+          color: body.color,
           refresh: 10
         }
       }
@@ -80,11 +80,11 @@ function generateBadges(mergeRequest, branchName) {
     {
       dynamic: async () => {
         const response = await fetch(gitlabUrl);
-        console.log(response);
+        const body = await response.json();
         return {
           title: `${mergeRequest.name} - GitLab`,
-          text: response.body.message,
-          color: response.body.color,
+          text: body.message,
+          color: body.color,
           refresh: 10
         }
       }
