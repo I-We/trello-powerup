@@ -24,11 +24,9 @@
           })
           .catch(err => {
             console.error('Failed to copy text: ', err);
-            // Optionally, close the window even if copying fails
-            window.close();
           });
       } else {
-        window.close();
+        console.error('Nothing to copy');
       }
     };
   </script>
