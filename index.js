@@ -40,13 +40,13 @@ TrelloPowerUp.initialize({
   } 
 });
 
-// Helper function to parse merge requests from the card description
-function parseMergeRequests(description) {
-  const regex = /Merge Requests:\s*•\s*\[([^\]]+)\]\((http[^\)]+)\)/g;
+// Helper function to parse merge requests from the card header
+function parseMergeRequests(header) {
+  const regex = /\• \[([^\]]+)\]\(([^)]+)\)/g;
   let match;
   const mergeRequests = [];
 
-  while (match = regex.exec(description)) {
+  while (match = regex.exec(header)) {
     mergeRequests.push({
       name: match[1],
       url: match[2],
