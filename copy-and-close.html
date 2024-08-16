@@ -10,6 +10,16 @@
       return urlParams.get(name);
     }
 
+    async function checkClipboardWritePermission() {
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'clipboard-write' });
+        return permissionStatus.state === 'granted';
+      } catch (err) {
+        console.error('Failed to check clipboard write permissions: ', err);
+        return false;
+      }
+    }
+
     async function copyToClipboard(value) {
       try {
         await navigator.clipboard.writeText(value);
@@ -32,29 +42,42 @@
     window.onload = async function() {
       const valueToCopy = await getQueryParameter('value');
       if (valueToCopy) {
-        await copyToClipboard(valueToCopy);
-
-        const checkInterval = 50; // Check every 50 milliseconds
-        const maxAttempts = 60; // Maximum number of attempts (3 seconds)
-
-        let attempts = 0;
-        const intervalId = setInterval(async () => {
-          const isMatching = await checkClipboard(valueToCopy);
-          if (isMatching) {
-            clearInterval(intervalId);
-            window.close();
-          } else {
-            attempts += 1;
-            if (attempts >= maxAttempts) {
-              clearInterval(intervalId);
-              window.close();
-            }
-          }
-        }, checkInterval);
+        const hasPermission = await checkClipboardWritePermission();
+        if (!hasPermission) {
+          console.log('Clipboard write permission not granted. Waiting for user action...');
+          const permissionDelay = 2000; // Wait for user to grant permission (2 seconds)
+          setTimeout(async () => {
+            await attemptCopy(valueToCopy);
+          }, permissionDelay);
+        } else {
+          await attemptCopy(valueToCopy);
+        }
       } else {
         window.close();
       }
     };
+
+    async function attemptCopy(valueToCopy) {
+      await copyToClipboard(valueToCopy);
+
+      const checkInterval = 50; // Check every 50 milliseconds
+      const maxAttempts = 60; // Maximum number of attempts (3 seconds)
+
+      let attempts = 0;
+      const intervalId = setInterval(async () => {
+        const isMatching = await checkClipboard(valueToCopy);
+        if (isMatching) {
+          clearInterval(intervalId);
+          window.close();
+        } else {
+          attempts += 1;
+          if (attempts >= maxAttempts) {
+            clearInterval(intervalId);
+            window.close();
+          }
+        }
+      }, checkInterval);
+    }
   </script>
 </head>
 <body>
