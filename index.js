@@ -85,6 +85,7 @@ function generateStatusBadges(mergeRequest, branchName) {
           title: `${mergeRequest.name} - Jenkins`,
           text: body.message,
           color: body.color,
+          url: body.url,
           refresh: 10
         }
       }
@@ -97,6 +98,7 @@ function generateStatusBadges(mergeRequest, branchName) {
           title: `${mergeRequest.name} - GitLab`,
           text: body.message,
           color: body.color,
+          url: body.url,
           refresh: 10
         }
       }
