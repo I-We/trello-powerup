@@ -111,7 +111,7 @@ function generateStatusBadges(mergeRequest, branchName) {
       return null;
     }
     const body = await response.json();
-    const componentName = splitComponentName.split('-').slice(1).join('_').toUpperCase();
+    const componentName = mr.name.split('-').slice(1).join('_').toUpperCase();
     return `VERSION_${componentName}: ${body.tag}`
   }));
 
