@@ -121,9 +121,7 @@ function generateStatusBadges(mergeRequest, branchName) {
 
   const patchedVersions = encodeURIComponent(images.join('\n'));
   return {
-      dynamic: async () => {
-        const response = await fetch(jenkinsUrl);
-        const body = await response.json();
+      dynamic: () => {
         return {
           title: `Patched versions`,
           text: "Click here to copy",
