@@ -32,7 +32,7 @@ TrelloPowerUp.initialize({
         const branchNameBadge = branchName ? {
           title: 'Branch',
           text: branchName,
-          color: 'lime',
+          color: 'sky',
           callback: () => {
             window.open(`https://lweinhard.github.io/copy-and-close.html?value=${branchName}`, "_blank").focus();
             t.alert({message: "Branch name has been copied to your clipboard !"})
