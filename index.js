@@ -15,7 +15,7 @@ TrelloPowerUp.initialize({
   },
   'card-detail-badges': function(t, options) {
     return t.card('desc', 'customFieldItems')
-      .then(function(card) {
+      .then(async function(card) {
         const sections = card.desc.split('---');
         if (sections.length < 2) {
           return [];
@@ -31,7 +31,7 @@ TrelloPowerUp.initialize({
         
         const branchNameBadge = branchName ? {
           title: 'Branch',
-          text: branchName,
+          text: 'Click here to copy',
           color: 'sky',
           callback: () => {
             window.open(`https://lweinhard.github.io/copy-and-close.html?value=${branchName}`, "_blank").focus();
@@ -41,8 +41,10 @@ TrelloPowerUp.initialize({
 
         // Generate status badges for each merge request
         const statusBadges = mergeRequests.flatMap(mr => generateStatusBadges(mr, branchName));
+        // Generate image badge for patched versions in case every merge request has an image
+        const imageBadge = await generateImageBadge(mergeRequests, branchName);
 
-        return [branchNameBadge, ...statusBadges].filter(Boolean);
+        return [branchNameBadge, ...statusBadges, imageBadge].filter(Boolean);
       });
   } 
 });
@@ -100,6 +102,40 @@ function generateStatusBadges(mergeRequest, branchName) {
       }
     }
   ];
+}
+
+ async function generateImageBadge(mergeRequests, branchName) {
+  const images = await Promise.all(mergeRequests.map(async (mr) => {
+    const response = await fetch(`https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`);
+    if (response.status === 404) {
+      return null;
+    }
+    const body = await response.json();
+    const componentName = mr.name.split('-').shift().join('_').toUpperCase();
+    return `VERSION_${componentName}: ${body.tag}`
+  }));
+
+  if (images.includes(null)) {
+    return null;
+  }
+
+  const patchedVersions = encodeURIComponent(images.join('\n'));
+  return {
+      dynamic: async () => {
+        const response = await fetch(jenkinsUrl);
+        const body = await response.json();
+        return {
+          title: `Patched versions`,
+          text: "Click here to copy",
+          color: "sky",
+          callback: () => {
+            window.open(`https://lweinhard.github.io/copy-and-close.html?value=${patchedVersions}`, "_blank").focus();
+            t.alert({message: "Patched versions have been copied to your clipboard !"})
+          },
+          refresh: 10
+        }
+      }
+    }
 }
 
 function sanitize(str) {
