@@ -42,7 +42,7 @@ TrelloPowerUp.initialize({
         // Generate status badges for each merge request
         const statusBadges = mergeRequests.flatMap(mr => generateStatusBadges(mr, branchName));
         // Generate image badge for patched versions in case every merge request has an image
-        const imageBadge = await generateImageBadge(mergeRequests, branchName);
+        const imageBadge = await generateImageBadge(mergeRequests, branchName, t);
 
         return [branchNameBadge, ...statusBadges, imageBadge].filter(Boolean);
       });
@@ -105,7 +105,7 @@ function generateStatusBadges(mergeRequest, branchName) {
   ];
 }
 
- async function generateImageBadge(mergeRequests, branchName) {
+ async function generateImageBadge(mergeRequests, branchName, t) {
   const images = await Promise.all(mergeRequests.map(async (mr) => {
     const response = await fetch(`https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`);
     if (response.status === 404) {
@@ -116,7 +116,7 @@ function generateStatusBadges(mergeRequest, branchName) {
     return `VERSION_${componentName}: ${body.tag}`
   }));
 
-  if (images.includes(null)) {
+  if (!images.length || images.includes(null)) {
     return null;
   }
 
@@ -129,6 +129,7 @@ function generateStatusBadges(mergeRequest, branchName) {
           color: "sky",
           callback: () => {
             window.open(`https://lweinhard.github.io/copy-and-close.html?value=${patchedVersions}`, "_blank").focus();
+            t.alert('Patched versions have been copied to your clipboard !');
           },
           refresh: 10
         }
