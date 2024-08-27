@@ -12,9 +12,6 @@ TrelloPowerUp.initialize({
 
         const header = sections[0];
         const mergeRequests = parseMergeRequests(header);
-        const mergeRequestsWithPipeline = mergeRequests.filter(
-          (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
-        );
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
@@ -23,17 +20,9 @@ TrelloPowerUp.initialize({
         const buttons = [
           branchName ? generateBranchNameButton(branchName, t) : null,
           mergeRequests.length
-            ? await generatePatchedVersionsButton(
-                mergeRequestsWithPipeline,
-                branchName,
-                t
-              )
+            ? await generatePatchedVersionsButton(mergeRequests, branchName, t)
             : null,
-          await generateLaunchPreviewButton(
-            mergeRequestsWithPipeline,
-            branchName,
-            t
-          ),
+          await generateLaunchPreviewButton(mergeRequests, branchName),
         ];
 
         return buttons.filter(Boolean); // Remove nulls
@@ -156,6 +145,10 @@ async function generateGroupedBadges(mergeRequests, branchName, platform) {
     }
   }
 
+  const mergeRequestsWithPipeline = mergeRequests.filter(
+    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
+  );
+
   // Create final badge set
   const finalBadges = [];
   if (groupedBadges.merged.length) {
@@ -175,7 +168,7 @@ async function generateGroupedBadges(mergeRequests, branchName, platform) {
   if (groupedBadges.success.length) {
     finalBadges.push({
       title: platform,
-      text: `Success - (${groupedBadges.success.length}/${mergeRequests.length})`,
+      text: `Success - (${groupedBadges.success.length}/${mergeRequestsWithPipeline.length})`,
       color: "green",
     });
   }
@@ -211,11 +204,10 @@ function generateStatusBadge(mergeRequest, branchName, platform) {
 }
 
 // Helper function to generate patched versions button
-async function generatePatchedVersionsButton(
-  mergeRequestsWithPipeline,
-  branchName,
-  t
-) {
+async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
+  const mergeRequestsWithPipeline = mergeRequests.filter(
+    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
+  );
   const images = await Promise.all(
     mergeRequestsWithPipeline.map(async (mr) => {
       const response = await fetch(
@@ -253,11 +245,10 @@ async function generatePatchedVersionsButton(
 }
 
 // Helper function to generate launch preview button
-async function generateLaunchPreviewButton(
-  mergeRequestsWithPipeline,
-  branchName,
-  t
-) {
+async function generateLaunchPreviewButton(mergeRequests, branchName) {
+  const mergeRequestsWithPipeline = mergeRequests.filter(
+    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
+  );
   const images = await Promise.all(
     mergeRequestsWithPipeline.map(async (mr) => {
       const response = await fetch(
