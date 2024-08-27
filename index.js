@@ -7,52 +7,26 @@ TrelloPowerUp.initialize({
         if (sections.length < 2) {
           return [];
         }
+
         const header = sections[0];
         const mergeRequests = parseMergeRequests(header);
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
         );
-        const branchNameButton = branchName
-          ? {
-              icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
-              text: "iWE - Branche",
-              callback: () => {
-                window
-                  .open(
-                    `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`,
-                    "_blank"
-                  )
-                  .focus();
-                t.alert({
-                  message: "Branch name has been copied to your clipboard !",
-                });
-              },
-            }
-          : null;
-        const patchedVersionsButton = generatePatchedVersionsButton(
-          mergeRequests,
-          branchName,
-          t
-        );
-        const launchPreviewButton = {
-          icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
-          text: "iWE - Preview",
-          callback: function (t) {
-            return t.popup({
-              title: "Lancer une preview",
-              url: "preview.html",
-            });
-          },
-        };
 
-        return [
-          branchNameButton,
-          patchedVersionsButton,
-          launchPreviewButton,
-        ].filter(Boolean);
+        const buttons = [
+          branchName ? generateBranchNameButton(branchName, t) : null,
+          mergeRequests.length
+            ? generatePatchedVersionsButton(mergeRequests, branchName, t)
+            : null,
+          generateLaunchPreviewButton(mergeRequests, branchName, t),
+        ];
+
+        return buttons.filter(Boolean); // Remove nulls
       });
   },
+
   "card-detail-badges": function (t, options) {
     return t
       .card("desc", "customFieldItems")
@@ -61,72 +35,26 @@ TrelloPowerUp.initialize({
         if (sections.length < 2) {
           return [];
         }
+
         const header = sections[0];
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
         );
-
-        // Parse the header for merge request details
         const mergeRequests = parseMergeRequests(header);
 
-        const gitlabBadges = mergeRequests.flatMap((mr) =>
-          generateStatusBadges(mr, branchName, "GitLab")
+        const gitlabBadges = await generateGroupedBadges(
+          mergeRequests,
+          branchName,
+          "GitLab"
         );
-        const jenkinsBadges = mergeRequests.flatMap((mr) =>
-          generateStatusBadges(mr, branchName, "Jenkins")
+        const jenkinsBadges = await generateGroupedBadges(
+          mergeRequests,
+          branchName,
+          "Jenkins"
         );
 
-        const gitlabGroupedBadges = gitlabBadges.reduce(async (acc, curr) => {
-          const current = await curr.dynamic();
-          if (current.status === "mergeable") {
-            return { ...acc, mergeable: [...acc?.mergeable, curr] };
-          }
-          if (current.status === "merged") {
-            return { ...acc, merged: [...acc?.merged, curr] };
-          }
-          return { ...acc, others: [...acc?.others, curr] };
-        }, {});
-        const jenkinsGroupedBadges = jenkinsBadges.reduce(async (acc, curr) => {
-          const current = await curr.dynamic();
-          if (current.status === "Waiting for tests") {
-            return acc;
-          }
-          if (current.status === "Success") {
-            return { ...acc, success: [...acc?.success, curr] };
-          }
-          return { ...acc, others: [...acc?.others, curr] };
-        }, {});
-
-        return [
-          (await Promise.all(gitlabGroupedBadges?.merged).length)
-            ? {
-                title: "GitLab",
-                text: `merged - (${gitlabGroupedBadges.merged.length}/${mergeRequests.length})`,
-                color: "purple",
-              }
-            : null,
-          (await Promise.all(gitlabGroupedBadges?.mergeable).length)
-            ? {
-                title: "GitLab",
-                text: `mergeable - (${gitlabGroupedBadges.mergeable.length}/${mergeRequests.length})`,
-                color: "green",
-              }
-            : null,
-          (await Promise.all(jenkinsGroupedBadges?.success).length)
-            ? {
-                title: "Jenkins",
-                text: `Success - (${jenkinsGroupedBadges.success.length}/${mergeRequests.length})`,
-                color: "green",
-              }
-            : null,
-          ...((await Promise.all(gitlabGroupedBadges?.others).length)
-            ? gitlabGroupedBadges.others
-            : []),
-          ...((await Promise.all(jenkinsGroupedBadges?.others).length)
-            ? jenkinsGroupedBadges.others
-            : []),
-        ].filter(Boolean);
+        return [...gitlabBadges, ...jenkinsBadges].filter(Boolean); // Remove nulls
       });
   },
 });
@@ -134,8 +62,8 @@ TrelloPowerUp.initialize({
 // Helper function to parse merge requests from the card header
 function parseMergeRequests(header) {
   const regex = /\• \[([^\]]+)\]\(([^)]+)\)/g;
-  let match;
   const mergeRequests = [];
+  let match;
 
   while ((match = regex.exec(header))) {
     const cleanedUrl = match[2].replace(/["\s]/g, "").trim();
@@ -149,6 +77,7 @@ function parseMergeRequests(header) {
   return mergeRequests;
 }
 
+// Helper function to get custom field value
 function getCustomFieldValue(customFieldItems, customFieldId) {
   const field = customFieldItems.find(
     (item) => item.idCustomField === customFieldId
@@ -156,7 +85,87 @@ function getCustomFieldValue(customFieldItems, customFieldId) {
   return field ? field.value.text : null;
 }
 
-function generateStatusBadges(mergeRequest, branchName, platform) {
+// Helper function to generate Branch Name button
+function generateBranchNameButton(branchName, t) {
+  return {
+    icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
+    text: "iWE - Branche",
+    callback: () => {
+      window
+        .open(
+          `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`,
+          "_blank"
+        )
+        .focus();
+      t.alert({
+        message: "Branch name has been copied to your clipboard!",
+      });
+    },
+  };
+}
+
+// Helper function to generate grouped badges
+async function generateGroupedBadges(mergeRequests, branchName, platform) {
+  const badges = [];
+
+  for (const mr of mergeRequests) {
+    const badge = await generateStatusBadge(mr, branchName, platform);
+    if (badge) {
+      badges.push(badge);
+    }
+  }
+
+  // Group badges by status
+  const groupedBadges = {
+    mergeable: [],
+    merged: [],
+    success: [],
+    others: [],
+  };
+
+  for (const badge of badges) {
+    const current = await badge.dynamic();
+    if (platform === "GitLab") {
+      if (current.status === "mergeable") groupedBadges.mergeable.push(badge);
+      else if (current.status === "merged") groupedBadges.merged.push(badge);
+      else groupedBadges.others.push(badge);
+    } else if (platform === "Jenkins") {
+      if (current.status === "Success") groupedBadges.success.push(badge);
+      else if (current.status !== "Waiting for tests")
+        groupedBadges.others.push(badge);
+    }
+  }
+
+  // Create final badge set
+  const finalBadges = [];
+  if (groupedBadges.merged.length) {
+    finalBadges.push({
+      title: `${platform}`,
+      text: `merged - (${groupedBadges.merged.length}/${mergeRequests.length})`,
+      color: "purple",
+    });
+  }
+  if (groupedBadges.mergeable.length) {
+    finalBadges.push({
+      title: `${platform}`,
+      text: `mergeable - (${groupedBadges.mergeable.length}/${mergeRequests.length})`,
+      color: "green",
+    });
+  }
+  if (groupedBadges.success.length) {
+    finalBadges.push({
+      title: "Jenkins",
+      text: `Success - (${groupedBadges.success.length}/${mergeRequests.length})`,
+      color: "green",
+    });
+  }
+  finalBadges.push(...groupedBadges.others);
+
+  return finalBadges;
+}
+
+// Helper function to generate status badges
+function generateStatusBadge(mergeRequest, branchName, platform) {
   const platformMap = {
     GitLab: sanitize(
       `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`
@@ -181,24 +190,21 @@ function generateStatusBadges(mergeRequest, branchName, platform) {
   };
 }
 
+// Helper function to generate patched versions button
 async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
   const images = await Promise.all(
     mergeRequests.map(async (mr) => {
       const response = await fetch(
         `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`
       );
-      if (response.status === 404) {
-        return null;
-      }
+      if (response.status === 404) return null;
       const body = await response.json();
       const componentName = mr.name.split("-").slice(1).join("_").toUpperCase();
       return `VERSION_${componentName}: ${body.tag}`;
     })
   );
 
-  if (!images.length || images.includes(null)) {
-    return null;
-  }
+  if (!images.length || images.includes(null)) return null;
 
   const patchedVersions = encodeURIComponent(images.join("\n"));
   return {
@@ -211,30 +217,27 @@ async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
           "_blank"
         )
         .focus();
-      t.alert("Patched versions have been copied to your clipboard !");
+      t.alert("Patched versions have been copied to your clipboard!");
     },
     refresh: 10,
   };
 }
 
+// Helper function to generate launch preview button
 async function generateLaunchPreviewButton(mergeRequests, branchName, t) {
   const images = await Promise.all(
     mergeRequests.map(async (mr) => {
       const response = await fetch(
         `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`
       );
-      if (response.status === 404) {
-        return null;
-      }
+      if (response.status === 404) return null;
       const body = await response.json();
       const componentName = mr.name.split("-").slice(1).join("_").toUpperCase();
       return `VERSION_${componentName}=${body.tag}`;
     })
   );
 
-  if (!images.length || images.includes(null)) {
-    return null;
-  }
+  if (!images.length || images.includes(null)) return null;
 
   const patchedVersions = images.join("&");
   return {
@@ -249,7 +252,7 @@ async function generateLaunchPreviewButton(mergeRequests, branchName, t) {
   };
 }
 
+// Sanitize strings to remove unwanted characters
 function sanitize(str) {
-  // Remove common invisible characters, including Zero Width Non-Joiner and Zero Width Space
   return str.replace(/[\u200C\u200B]/g, "").trim();
 }
