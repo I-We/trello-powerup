@@ -1,3 +1,5 @@
+const NO_PIPELINE_PROJECTS = ["app-qaft", "iwe-app-dsl"];
+
 TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
@@ -10,6 +12,9 @@ TrelloPowerUp.initialize({
 
         const header = sections[0];
         const mergeRequests = parseMergeRequests(header);
+        const mergeRequestsWithPipeline = mergeRequests.filter(
+          (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
+        );
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
@@ -18,9 +23,17 @@ TrelloPowerUp.initialize({
         const buttons = [
           branchName ? generateBranchNameButton(branchName, t) : null,
           mergeRequests.length
-            ? await generatePatchedVersionsButton(mergeRequests, branchName, t)
+            ? await generatePatchedVersionsButton(
+                mergeRequestsWithPipeline,
+                branchName,
+                t
+              )
             : null,
-          await generateLaunchPreviewButton(mergeRequests, branchName, t),
+          await generateLaunchPreviewButton(
+            mergeRequestsWithPipeline,
+            branchName,
+            t
+          ),
         ];
 
         return buttons.filter(Boolean); // Remove nulls
@@ -198,9 +211,13 @@ function generateStatusBadge(mergeRequest, branchName, platform) {
 }
 
 // Helper function to generate patched versions button
-async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
+async function generatePatchedVersionsButton(
+  mergeRequestsWithPipeline,
+  branchName,
+  t
+) {
   const images = await Promise.all(
-    mergeRequests.map(async (mr) => {
+    mergeRequestsWithPipeline.map(async (mr) => {
       const response = await fetch(
         `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`
       );
@@ -213,7 +230,12 @@ async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
 
   if (!images.length || images.includes(null)) return null;
 
-  const patchedVersions = encodeURIComponent(images.join("\n"));
+  const hasAppQaft = mergeRequests.filter((mr) => mr.name === "app-qaft");
+  const patchedVersions = encodeURIComponent(
+    [...images, hasAppQaft ? `ft:resourceBranch: ${branchName}` : null].join(
+      "\n"
+    )
+  );
   return {
     icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
     text: `iWE - Patched versions`,
@@ -231,9 +253,13 @@ async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
 }
 
 // Helper function to generate launch preview button
-async function generateLaunchPreviewButton(mergeRequests, branchName, t) {
+async function generateLaunchPreviewButton(
+  mergeRequestsWithPipeline,
+  branchName,
+  t
+) {
   const images = await Promise.all(
-    mergeRequests.map(async (mr) => {
+    mergeRequestsWithPipeline.map(async (mr) => {
       const response = await fetch(
         `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`
       );
@@ -246,7 +272,11 @@ async function generateLaunchPreviewButton(mergeRequests, branchName, t) {
 
   if (!images.length || images.includes(null)) return null;
 
-  const patchedVersions = images.join("&");
+  const hasAppQaft = mergeRequests.filter((mr) => mr.name === "app-qaft");
+  const patchedVersions = [
+    ...images,
+    hasAppQaft ? `ft:resourceBranch: ${branchName}` : null,
+  ].join("&");
   return {
     icon: "https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a/rocket-ship.png?1494946700421",
     text: "Lancer une preview",
