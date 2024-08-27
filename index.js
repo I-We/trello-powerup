@@ -276,10 +276,10 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
   ].join("&");
   return {
     icon: IWE_LOGO,
-    text: "iWE - Lancer une preview",
+    text: "iWE - Preview",
     callback: function (t) {
       return t.popup({
-        title: "iWE - Lancer une preview",
+        title: "iWE - Preview",
         url: `preview.html?${patchedVersions}`,
       });
     },
