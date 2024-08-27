@@ -8,7 +8,6 @@ TrelloPowerUp.initialize({
           return [];
         }
         const header = sections[0];
-        const customFieldItems = card.customFieldItems;
         const mergeRequests = parseMergeRequests(header);
         const branchName = getCustomFieldValue(
           customFieldItems,
@@ -54,77 +53,79 @@ TrelloPowerUp.initialize({
       });
   },
   "card-detail-badges": function (t, options) {
-    return t.card("desc", "customFieldItems").then(async function (card) {
-      const sections = card.desc.split("---");
-      if (sections.length < 2) {
-        return [];
-      }
-      const header = sections[0];
-      const customFieldItems = card.customFieldItems;
-      const branchName = getCustomFieldValue(
-        customFieldItems,
-        "66a7b730211062b563b92f53"
-      );
-
-      // Parse the header for merge request details
-      const mergeRequests = parseMergeRequests(header);
-
-      const gitlabBadges = mergeRequests.flatMap((mr) =>
-        generateStatusBadges(mr, branchName, "GitLab")
-      );
-      const jenkinsBadges = mergeRequests.flatMap((mr) =>
-        generateStatusBadges(mr, branchName, "Jenkins")
-      );
-
-      const gitlabGroupedBadges = gitlabBadges.reduce((acc, curr) => {
-        if (curr.status === "mergeable") {
-          return { mergeable: [...acc, curr] };
+    return t
+      .card("desc", "customFieldItems")
+      .then(async function ({ desc, customFieldItems }) {
+        const sections = desc.split("---");
+        if (sections.length < 2) {
+          return [];
         }
-        if (curr.status === "merged") {
-          return { merged: [...acc, curr] };
-        }
-        return { ...acc, others: [...acc.others, curr] };
-      }, {});
-      const jenkinsGroupedBadges = jenkinsBadges.reduce((acc, curr) => {
-        if (curr.status === "Waiting for tests") {
-          return acc;
-        }
-        if (curr.status === "Success") {
-          return { success: [...acc, curr] };
-        }
-        return { ...acc, others: [...acc.others, curr] };
-      }, {});
+        const header = sections[0];
+        const customFieldItems = customFieldItems;
+        const branchName = getCustomFieldValue(
+          customFieldItems,
+          "66a7b730211062b563b92f53"
+        );
 
-      return [
-        gitlabGroupedBadges.merged.length
-          ? {
-              title: "GitLab",
-              text: `merged - (${gitlabGroupedBadges.merged.length}/${mergeRequests.length})`,
-              color: "purple",
-            }
-          : null,
-        gitlabGroupedBadges.mergeable.length
-          ? {
-              title: "GitLab",
-              text: `mergeable - (${gitlabGroupedBadges.mergeable.length}/${mergeRequests.length})`,
-              color: "green",
-            }
-          : null,
-        jenkinsGroupedBadges.success.length
-          ? {
-              title: "Jenkins",
-              text: `Success - (${jenkinsGroupedBadges.success.length}/${mergeRequests.length})`,
-              color: "green",
-            }
-          : null,
-        ...(gitlabGroupedBadges.others.length
-          ? gitlabGroupedBadges.others
-          : []),
-        ...(jenkinsGroupedBadges.others.length
-          ? jenkinsGroupedBadges.others
-          : []),
-      ].filter(Boolean);
-    });
+        // Parse the header for merge request details
+        const mergeRequests = parseMergeRequests(header);
+
+        const gitlabBadges = mergeRequests.flatMap((mr) =>
+          generateStatusBadges(mr, branchName, "GitLab")
+        );
+        const jenkinsBadges = mergeRequests.flatMap((mr) =>
+          generateStatusBadges(mr, branchName, "Jenkins")
+        );
+
+        const gitlabGroupedBadges = gitlabBadges.reduce((acc, curr) => {
+          if (curr.status === "mergeable") {
+            return { mergeable: [...acc, curr] };
+          }
+          if (curr.status === "merged") {
+            return { merged: [...acc, curr] };
+          }
+          return { ...acc, others: [...acc.others, curr] };
+        }, {});
+        const jenkinsGroupedBadges = jenkinsBadges.reduce((acc, curr) => {
+          if (curr.status === "Waiting for tests") {
+            return acc;
+          }
+          if (curr.status === "Success") {
+            return { success: [...acc, curr] };
+          }
+          return { ...acc, others: [...acc.others, curr] };
+        }, {});
+
+        return [
+          gitlabGroupedBadges.merged.length
+            ? {
+                title: "GitLab",
+                text: `merged - (${gitlabGroupedBadges.merged.length}/${mergeRequests.length})`,
+                color: "purple",
+              }
+            : null,
+          gitlabGroupedBadges.mergeable.length
+            ? {
+                title: "GitLab",
+                text: `mergeable - (${gitlabGroupedBadges.mergeable.length}/${mergeRequests.length})`,
+                color: "green",
+              }
+            : null,
+          jenkinsGroupedBadges.success.length
+            ? {
+                title: "Jenkins",
+                text: `Success - (${jenkinsGroupedBadges.success.length}/${mergeRequests.length})`,
+                color: "green",
+              }
+            : null,
+          ...(gitlabGroupedBadges.others.length
+            ? gitlabGroupedBadges.others
+            : []),
+          ...(jenkinsGroupedBadges.others.length
+            ? jenkinsGroupedBadges.others
+            : []),
+        ].filter(Boolean);
+      });
   },
 });
 
