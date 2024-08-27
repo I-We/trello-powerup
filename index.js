@@ -61,6 +61,10 @@ TrelloPowerUp.initialize({
       }
       const header = sections[0];
       const customFieldItems = card.customFieldItems;
+      const branchName = getCustomFieldValue(
+        customFieldItems,
+        "66a7b730211062b563b92f53"
+      );
 
       // Parse the header for merge request details
       const mergeRequests = parseMergeRequests(header);
