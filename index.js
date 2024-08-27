@@ -57,9 +57,9 @@ TrelloPowerUp.initialize({
         console.log(gitlabBadges);
         console.log(jenkinsBadges);
 
-        return await Promise.all([...gitlabBadges, ...jenkinsBadges]).filter(
-          Boolean
-        ); // Remove nulls
+        return await Promise.all(
+          [...gitlabBadges, ...jenkinsBadges].filter(Boolean)
+        );
       });
   },
 });
