@@ -78,19 +78,19 @@ TrelloPowerUp.initialize({
         );
 
         const gitlabGroupedBadges = gitlabBadges.reduce((acc, curr) => {
-          if (curr.status === "mergeable") {
+          if (curr().status === "mergeable") {
             return { ...acc, mergeable: [...acc?.mergeable, curr] };
           }
-          if (curr.status === "merged") {
+          if (curr().status === "merged") {
             return { ...acc, merged: [...acc?.merged, curr] };
           }
           return { ...acc, others: [...acc?.others, curr] };
         }, {});
         const jenkinsGroupedBadges = jenkinsBadges.reduce((acc, curr) => {
-          if (curr.status === "Waiting for tests") {
+          if (curr().status === "Waiting for tests") {
             return acc;
           }
-          if (curr.status === "Success") {
+          if (curr().status === "Success") {
             return { ...acc, success: [...acc?.success, curr] };
           }
           return { ...acc, others: [...acc?.others, curr] };
