@@ -54,6 +54,9 @@ TrelloPowerUp.initialize({
           "Jenkins"
         );
 
+        console.log(gitlabBadges);
+        console.log(jenkinsBadges);
+
         return [...gitlabBadges, ...jenkinsBadges].filter(Boolean); // Remove nulls
       });
   },
@@ -140,21 +143,21 @@ async function generateGroupedBadges(mergeRequests, branchName, platform) {
   const finalBadges = [];
   if (groupedBadges.merged.length) {
     finalBadges.push({
-      title: `${platform}`,
+      title: platform,
       text: `merged - (${groupedBadges.merged.length}/${mergeRequests.length})`,
       color: "purple",
     });
   }
   if (groupedBadges.mergeable.length) {
     finalBadges.push({
-      title: `${platform}`,
+      title: platform,
       text: `mergeable - (${groupedBadges.mergeable.length}/${mergeRequests.length})`,
       color: "green",
     });
   }
   if (groupedBadges.success.length) {
     finalBadges.push({
-      title: "Jenkins",
+      title: platform,
       text: `Success - (${groupedBadges.success.length}/${mergeRequests.length})`,
       color: "green",
     });
