@@ -109,7 +109,7 @@ async function generateGroupedBadges(mergeRequests, branchName, platform) {
   const badges = [];
 
   for (const mr of mergeRequests) {
-    const badge = await generateStatusBadge(mr, branchName, platform);
+    const badge = generateStatusBadge(mr, branchName, platform);
     if (badge) {
       badges.push(badge);
     }
@@ -126,12 +126,12 @@ async function generateGroupedBadges(mergeRequests, branchName, platform) {
   for (const badge of badges) {
     const current = await badge.dynamic();
     if (platform === "GitLab") {
-      if (current.status === "mergeable") groupedBadges.mergeable.push(badge);
-      else if (current.status === "merged") groupedBadges.merged.push(badge);
+      if (current.text === "mergeable") groupedBadges.mergeable.push(badge);
+      else if (current.text === "merged") groupedBadges.merged.push(badge);
       else groupedBadges.others.push(badge);
     } else if (platform === "Jenkins") {
-      if (current.status === "Success") groupedBadges.success.push(badge);
-      else if (current.status !== "Waiting for tests")
+      if (current.text === "Success") groupedBadges.success.push(badge);
+      else if (current.text !== "Waiting for tests")
         groupedBadges.others.push(badge);
     }
   }
