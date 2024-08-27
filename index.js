@@ -11,9 +11,6 @@ TrelloPowerUp.initialize({
         if (sections.length < 2) {
           return [];
         }
-
-        console.log(members);
-        console.log(url);
         const header = sections[0];
         const mergeRequests = parseMergeRequests(header);
         const branchName = getCustomFieldValue(
