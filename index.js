@@ -77,20 +77,22 @@ TrelloPowerUp.initialize({
           generateStatusBadges(mr, branchName, "Jenkins")
         );
 
-        const gitlabGroupedBadges = gitlabBadges.reduce((acc, curr) => {
-          if (curr().status === "mergeable") {
+        const gitlabGroupedBadges = gitlabBadges.reduce(async (acc, curr) => {
+          const current = await curr.dynamic();
+          if (current.status === "mergeable") {
             return { ...acc, mergeable: [...acc?.mergeable, curr] };
           }
-          if (curr().status === "merged") {
+          if (current.status === "merged") {
             return { ...acc, merged: [...acc?.merged, curr] };
           }
           return { ...acc, others: [...acc?.others, curr] };
         }, {});
-        const jenkinsGroupedBadges = jenkinsBadges.reduce((acc, curr) => {
-          if (curr().status === "Waiting for tests") {
+        const jenkinsGroupedBadges = jenkinsBadges.reduce(async (acc, curr) => {
+          const current = await curr.dynamic();
+          if (current.status === "Waiting for tests") {
             return acc;
           }
-          if (curr().status === "Success") {
+          if (current.status === "Success") {
             return { ...acc, success: [...acc?.success, curr] };
           }
           return { ...acc, others: [...acc?.others, curr] };
