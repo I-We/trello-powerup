@@ -15,7 +15,8 @@ TrelloPowerUp.initialize({
         );
         const branchNameButton = branchName
           ? {
-              text: "Copier la branche",
+              icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
+              text: "iWE - Branche",
               callback: () => {
                 window
                   .open(
@@ -35,8 +36,8 @@ TrelloPowerUp.initialize({
           t
         );
         const launchPreviewButton = {
-          icon: "https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a/rocket-ship.png?1494946700421",
-          text: "Lancer une preview",
+          icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
+          text: "iWE - Preview",
           callback: function (t) {
             return t.popup({
               title: "Lancer une preview",
@@ -199,8 +200,8 @@ async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
 
   const patchedVersions = encodeURIComponent(images.join("\n"));
   return {
-    icon: "https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a/rocket-ship.png?1494946700421",
-    text: `Patched versions`,
+    icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
+    text: `iWE - Patched versions`,
     callback: () => {
       window
         .open(
