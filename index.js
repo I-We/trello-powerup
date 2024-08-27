@@ -44,6 +44,9 @@ TrelloPowerUp.initialize({
           "66a7b730211062b563b92f53"
         );
         const mergeRequests = parseMergeRequests(header);
+        const mergeRequestsWithPipeline = mergeRequests.filter(
+          (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
+        );
 
         const gitlabBadges = await generateGroupedBadges(
           mergeRequests,
@@ -51,7 +54,7 @@ TrelloPowerUp.initialize({
           "GitLab"
         );
         const jenkinsBadges = await generateGroupedBadges(
-          mergeRequests,
+          mergeRequestsWithPipeline,
           branchName,
           "Jenkins"
         );
