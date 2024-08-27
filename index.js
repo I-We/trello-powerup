@@ -78,10 +78,10 @@ TrelloPowerUp.initialize({
 
         const gitlabGroupedBadges = gitlabBadges.reduce((acc, curr) => {
           if (curr.status === "mergeable") {
-            return { mergeable: [...acc, curr] };
+            return { ...acc, mergeable: [...acc?.mergeable, curr] };
           }
           if (curr.status === "merged") {
-            return { merged: [...acc, curr] };
+            return { ...acc, merged: [...acc?.merged, curr] };
           }
           return { ...acc, others: [...acc?.others, curr] };
         }, {});
@@ -90,7 +90,7 @@ TrelloPowerUp.initialize({
             return acc;
           }
           if (curr.status === "Success") {
-            return { success: [...acc, curr] };
+            return { ...acc, success: [...acc?.success, curr] };
           }
           return { ...acc, others: [...acc?.others, curr] };
         }, {});
