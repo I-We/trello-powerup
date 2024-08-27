@@ -5,13 +5,15 @@ const IWE_LOGO =
 TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
-      .card("desc", "customFieldItems", "actions")
-      .then(async function ({ desc, customFieldItems, actions }) {
+      .card("desc", "customFieldItems", "id", "members", "url")
+      .then(async function ({ desc, customFieldItems, id }) {
         const sections = desc.split("---");
         if (sections.length < 2) {
           return [];
         }
-        console.log(actions);
+
+        console.log(members);
+        console.log(url);
         const header = sections[0];
         const mergeRequests = parseMergeRequests(header);
         const branchName = getCustomFieldValue(
