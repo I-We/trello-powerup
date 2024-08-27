@@ -113,7 +113,7 @@ TrelloPowerUp.initialize({
                 color: "green",
               }
             : null,
-          (await (jenkinsGroupedBadges?.success).length)
+          (await Promise.all(jenkinsGroupedBadges?.success).length)
             ? {
                 title: "Jenkins",
                 text: `Success - (${jenkinsGroupedBadges.success.length}/${mergeRequests.length})`,
