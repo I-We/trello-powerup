@@ -182,6 +182,7 @@ function generateStatusBadge(mergeRequest, branchName, platform) {
     dynamic: async () => {
       const response = await fetch(platformMap[platform]);
       const body = await response.json();
+      console.log(body);
       return {
         title: `${mergeRequest.name} - ${platform}`,
         text: body.message,
