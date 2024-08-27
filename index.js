@@ -1,4 +1,6 @@
 const NO_PIPELINE_PROJECTS = ["app-qaft", "iwe-app-dsl"];
+const IWE_LOGO =
+  "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg";
 
 TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
@@ -97,7 +99,7 @@ function getCustomFieldValue(customFieldItems, customFieldId) {
 // Helper function to generate Branch Name button
 function generateBranchNameButton(branchName, t) {
   return {
-    icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
+    icon: IWE_LOGO,
     text: "iWE - Branche",
     callback: () => {
       window
@@ -231,7 +233,7 @@ async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
     )
   );
   return {
-    icon: "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg",
+    icon: IWE_LOGO,
     text: `iWE - Patched versions`,
     callback: () => {
       window
@@ -273,11 +275,11 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
     hasAppQaft ? `ft:resourceBranch: ${branchName}` : null,
   ].join("&");
   return {
-    icon: "https://cdn.glitch.com/1b42d7fe-bda8-4af8-a6c8-eff0cea9e08a/rocket-ship.png?1494946700421",
-    text: "Lancer une preview",
+    icon: IWE_LOGO,
+    text: "iWE - Lancer une preview",
     callback: function (t) {
       return t.popup({
-        title: "Lancer une preview",
+        title: "iWE - Lancer une preview",
         url: `preview.html?${patchedVersions}`,
       });
     },
