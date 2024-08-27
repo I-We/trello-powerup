@@ -56,6 +56,7 @@ TrelloPowerUp.initialize({
 
         console.log(gitlabBadges);
         console.log(jenkinsBadges);
+        console.log([...gitlabBadges, ...jenkinsBadges].filter(Boolean));
 
         return await Promise.all(
           [...gitlabBadges, ...jenkinsBadges].filter(Boolean)
