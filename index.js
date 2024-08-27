@@ -2,7 +2,7 @@ TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
       .card("desc", "customFieldItems")
-      .then(function ({ desc, customFieldItems }) {
+      .then(async function ({ desc, customFieldItems }) {
         const sections = desc.split("---");
         if (sections.length < 2) {
           return [];
@@ -18,9 +18,9 @@ TrelloPowerUp.initialize({
         const buttons = [
           branchName ? generateBranchNameButton(branchName, t) : null,
           mergeRequests.length
-            ? generatePatchedVersionsButton(mergeRequests, branchName, t)
+            ? await generatePatchedVersionsButton(mergeRequests, branchName, t)
             : null,
-          generateLaunchPreviewButton(mergeRequests, branchName, t),
+          await generateLaunchPreviewButton(mergeRequests, branchName, t),
         ];
 
         return buttons.filter(Boolean); // Remove nulls
