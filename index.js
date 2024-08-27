@@ -2,8 +2,8 @@ TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
       .card("desc", "customFieldItems")
-      .then(function ({ customFieldItems }) {
-        const sections = card.desc.split("---");
+      .then(function ({ desc, customFieldItems }) {
+        const sections = desc.split("---");
         if (sections.length < 2) {
           return [];
         }
@@ -83,7 +83,7 @@ TrelloPowerUp.initialize({
           if (curr.status === "merged") {
             return { merged: [...acc, curr] };
           }
-          return { ...acc, others: [...acc.others, curr] };
+          return { ...acc, others: [...acc?.others, curr] };
         }, {});
         const jenkinsGroupedBadges = jenkinsBadges.reduce((acc, curr) => {
           if (curr.status === "Waiting for tests") {
@@ -92,7 +92,7 @@ TrelloPowerUp.initialize({
           if (curr.status === "Success") {
             return { success: [...acc, curr] };
           }
-          return { ...acc, others: [...acc.others, curr] };
+          return { ...acc, others: [...acc?.others, curr] };
         }, {});
 
         return [
