@@ -61,7 +61,6 @@ TrelloPowerUp.initialize({
           return [];
         }
         const header = sections[0];
-        const customFieldItems = customFieldItems;
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
