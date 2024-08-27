@@ -99,31 +99,31 @@ TrelloPowerUp.initialize({
         }, {});
 
         return [
-          gitlabGroupedBadges?.merged.length
+          (await Promise.all(gitlabGroupedBadges?.merged).length)
             ? {
                 title: "GitLab",
                 text: `merged - (${gitlabGroupedBadges.merged.length}/${mergeRequests.length})`,
                 color: "purple",
               }
             : null,
-          gitlabGroupedBadges?.mergeable.length
+          (await Promise.all(gitlabGroupedBadges?.mergeable).length)
             ? {
                 title: "GitLab",
                 text: `mergeable - (${gitlabGroupedBadges.mergeable.length}/${mergeRequests.length})`,
                 color: "green",
               }
             : null,
-          jenkinsGroupedBadges?.success.length
+          (await (jenkinsGroupedBadges?.success).length)
             ? {
                 title: "Jenkins",
                 text: `Success - (${jenkinsGroupedBadges.success.length}/${mergeRequests.length})`,
                 color: "green",
               }
             : null,
-          ...(gitlabGroupedBadges?.others.length
+          ...((await Promise.all(gitlabGroupedBadges?.others).length)
             ? gitlabGroupedBadges.others
             : []),
-          ...(jenkinsGroupedBadges?.others.length
+          ...((await Promise.all(jenkinsGroupedBadges?.others).length)
             ? jenkinsGroupedBadges.others
             : []),
         ].filter(Boolean);
