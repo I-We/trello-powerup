@@ -225,7 +225,9 @@ async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
 
   if (!images.length || images.includes(null)) return null;
 
-  const hasAppQaft = mergeRequests.filter((mr) => mr.name === "app-qaft");
+  const hasAppQaft = mergeRequests.filter(
+    (mr) => mr.name === "app-qaft"
+  ).length;
   const patchedVersions = encodeURIComponent(
     [...images, hasAppQaft ? `ft:resourceBranch: ${branchName}` : null].join(
       "\n"
@@ -266,7 +268,9 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
 
   if (!images.length || images.includes(null)) return null;
 
-  const hasAppQaft = mergeRequests.filter((mr) => mr.name === "app-qaft");
+  const hasAppQaft = mergeRequests.filter(
+    (mr) => mr.name === "app-qaft"
+  ).length;
   const patchedVersions = [
     ...images,
     hasAppQaft ? `ft:resourceBranch: ${branchName}` : null,
