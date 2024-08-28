@@ -5,14 +5,14 @@ const IWE_LOGO =
 TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
-      .card("desc", "customFieldItems", "id", "members", "url", "title")
+      .card("desc", "customFieldItems", "id", "members", "url", "name")
       .then(async function ({
         desc,
         customFieldItems,
         id,
         members,
         url,
-        title,
+        name: title,
       }) {
         const sections = desc.split("---");
         if (sections.length < 2) {
