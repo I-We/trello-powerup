@@ -306,9 +306,7 @@ async function generateCreateMergeRequestsButton(
   url,
   title
 ) {
-  const endpoint = encodeURIComponent(
-    `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?title=${title}&cardId=${id}&trelloUserId=${userId}&branch=${branchName}&url=${url}`
-  );
+  const endpoint = `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?title=${title}&cardId=${id}&trelloUserId=${userId}&branch=${branchName}&url=${url}`;
 
   return {
     icon: IWE_LOGO,
