@@ -5,8 +5,15 @@ const IWE_LOGO =
 TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
-      .card("desc", "customFieldItems", "id", "members", "url")
-      .then(async function ({ desc, customFieldItems, id, members, url }) {
+      .card("desc", "customFieldItems", "id", "members", "url", "title")
+      .then(async function ({
+        desc,
+        customFieldItems,
+        id,
+        members,
+        url,
+        title,
+      }) {
         const sections = desc.split("---");
         if (sections.length < 2) {
           return [];
@@ -20,8 +27,16 @@ TrelloPowerUp.initialize({
 
         const buttons = [
           branchName ? generateBranchNameButton(branchName, t) : null,
+          await generateCreateMergeRequestsButton(
+            mergeRequests,
+            branchName,
+            id,
+            members[0].id,
+            url,
+            title
+          ),
           mergeRequests.length
-            ? await generatePatchedVersionsButton(mergeRequests, branchName, t)
+            ? await generatePatchedVersionsButton(mergeRequests, branchName)
             : null,
           await generateLaunchPreviewButton(mergeRequests, branchName),
         ];
@@ -96,18 +111,18 @@ function getCustomFieldValue(customFieldItems, customFieldId) {
 }
 
 // Helper function to generate Branch Name button
-function generateBranchNameButton(branchName, t) {
+function generateBranchNameButton(branchName) {
   return {
     icon: IWE_LOGO,
     text: "iWE - Branche",
-    callback: () => {
+    callback: (t) => {
       window
         .open(
           `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`,
           "_blank"
         )
         .focus();
-      t.alert({
+      return t.alert({
         message: "Branch name has been copied to your clipboard!",
       });
     },
@@ -205,7 +220,7 @@ function generateStatusBadge(mergeRequest, branchName, platform) {
 }
 
 // Helper function to generate patched versions button
-async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
+async function generatePatchedVersionsButton(mergeRequests, branchName) {
   const mergeRequestsWithPipeline = mergeRequests.filter(
     (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
   );
@@ -234,14 +249,14 @@ async function generatePatchedVersionsButton(mergeRequests, branchName, t) {
   return {
     icon: IWE_LOGO,
     text: `iWE - Patched versions`,
-    callback: () => {
+    callback: (t) => {
       window
         .open(
           `https://lweinhard.github.io/copy-and-close.html?value=${patchedVersions}`,
           "_blank"
         )
         .focus();
-      t.alert("Patched versions have been copied to your clipboard!");
+      return t.alert("Patched versions have been copied to your clipboard!");
     },
     refresh: 10,
   };
@@ -281,6 +296,29 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
         title: "iWE - Preview",
         url: `preview.html?${patchedVersions}`,
       });
+    },
+  };
+}
+
+async function generateCreateMergeRequestsButton(
+  mergeRequests,
+  branchName,
+  id,
+  userId,
+  url,
+  title
+) {
+  const repositories = mergeRequests.map((mr) => mr.name);
+  const endpoint = encodeURIComponent(
+    `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?title=${title}&cardId=${id}&trelloUserId=${userId}&branch=${branchName}&url=${url}&repositories=${repositories}`
+  );
+
+  return {
+    icon: IWE_LOGO,
+    text: "iWE - Merge Requests",
+    callback: async function (t) {
+      await fetch(endpoint);
+      return t.alert("Merge requests are being created on GitLab...");
     },
   };
 }
