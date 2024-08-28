@@ -28,7 +28,6 @@ TrelloPowerUp.initialize({
         const buttons = [
           branchName ? generateBranchNameButton(branchName, t) : null,
           await generateCreateMergeRequestsButton(
-            mergeRequests,
             branchName,
             id,
             members[0].id,
@@ -301,16 +300,14 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
 }
 
 async function generateCreateMergeRequestsButton(
-  mergeRequests,
   branchName,
   id,
   userId,
   url,
   title
 ) {
-  const repositories = mergeRequests.map((mr) => mr.name);
   const endpoint = encodeURIComponent(
-    `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?title=${title}&cardId=${id}&trelloUserId=${userId}&branch=${branchName}&url=${url}&repositories=${repositories}`
+    `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?title=${title}&cardId=${id}&trelloUserId=${userId}&branch=${branchName}&url=${url}`
   );
 
   return {
