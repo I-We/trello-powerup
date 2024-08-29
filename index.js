@@ -1,4 +1,4 @@
-const NO_PIPELINE_PROJECTS = ["app-qaft", "iwe-app-dsl"];
+const NO_PIPELINE_PROJECTS = ["app-qaft", "iwe-app-dsl", "functionnal-tests"];
 const IWE_LOGO =
   "https://iwecloud.com/wp-content/uploads/2020/06/logo-application-web-outil-collaboration-low-code-parcours-processus-client-digital.svg";
 
@@ -237,13 +237,14 @@ async function generatePatchedVersionsButton(mergeRequests, branchName) {
 
   if (!images.length || images.includes(null)) return null;
 
-  const hasAppQaft = mergeRequests.filter(
-    (mr) => mr.name === "app-qaft"
+  const hasFunctionalTests = mergeRequests.filter(
+    (mr) => mr.name === "functionnal-tests"
   ).length;
   const patchedVersions = encodeURIComponent(
-    [...images, hasAppQaft ? `ft:resourceBranch: ${branchName}` : null].join(
-      "\n"
-    )
+    [
+      ...images,
+      hasFunctionalTests ? `ft:resourceBranch: ${branchName}` : null,
+    ].join("\n")
   );
   return {
     icon: IWE_LOGO,
@@ -280,12 +281,12 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
 
   if (!images.length || images.includes(null)) return null;
 
-  const hasAppQaft = mergeRequests.filter(
-    (mr) => mr.name === "app-qaft"
+  const hasFunctionalTests = mergeRequests.filter(
+    (mr) => mr.name === "functionnal-tests"
   ).length;
   const patchedVersions = [
     ...images,
-    hasAppQaft ? `ft:resourceBranch: ${branchName}` : null,
+    hasFunctionalTests ? `ft:resourceBranch: ${branchName}` : null,
   ].join("&");
   return {
     icon: IWE_LOGO,
@@ -321,4 +322,23 @@ async function generateCreateMergeRequestsButton(
 // Sanitize strings to remove unwanted characters
 function sanitize(str) {
   return str.replace(/[\u200C\u200B]/g, "").trim();
+}
+
+async function generateLaunchPipelinesButton(mergeRequests, branchName) {
+  const mergeRequestsWithPipeline = mergeRequests.filter(
+    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
+  );
+
+  const queryParams = `branch=${branchName}&repositories=${mergeRequestsWithPipeline}`;
+
+  return {
+    icon: IWE_LOGO,
+    text: "iWE - Jenkins",
+    callback: function (t) {
+      return t.popup({
+        title: "iWE - Jenkins",
+        url: `jenkins.html?${queryParams}`,
+      });
+    },
+  };
 }

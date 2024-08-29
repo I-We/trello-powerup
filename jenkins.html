@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lancer des pipelines Jenkins</title>
+  <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      max-width: 300px;
+    }
+    .checkbox-group {
+      margin-bottom: 10px;
+    }
+  </style>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script>
+    function getQueryParams() {
+      const params = {};
+      const queryString = window.location.search.substring(1);
+      const queryArray = queryString.split("&");
+
+      for (const query of queryArray) {
+        const [key, value] = query.split("=");
+        if (key) {
+          params[decodeURIComponent(key)] = decodeURIComponent(value);
+        }
+      }
+
+      return params;
+    }
+
+    function createCheckboxes() {
+      const params = getQueryParams();
+      const repositories = params.repositories ? params.repositories.split(",") : [];
+      const form = document.getElementById("pipelines");
+
+      repositories.forEach(repository => {
+        const div = document.createElement("div");
+        div.className = "checkbox-group";
+
+        const label = document.createElement("label");
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.id = repository;
+        input.name = repository;
+        input.checked = true;
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(" " + repository));
+
+        div.appendChild(label);
+        form.insertBefore(div, form.lastElementChild);
+      });
+    }
+
+    window.onload = createCheckboxes;
+  </script>
+</head>
+<body>
+  <form id="pipelines">
+    <button type="submit">Lancer les pipelines</button>
+  </form>
+</body>
+</html>
