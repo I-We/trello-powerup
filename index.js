@@ -34,6 +34,7 @@ TrelloPowerUp.initialize({
             url,
             title
           ),
+          await generateLaunchPipelinesButton(mergeRequests, branchName),
           mergeRequests.length
             ? await generatePatchedVersionsButton(mergeRequests, branchName)
             : null,
@@ -325,9 +326,10 @@ function sanitize(str) {
 }
 
 async function generateLaunchPipelinesButton(mergeRequests, branchName) {
-  const mergeRequestsWithPipeline = mergeRequests.filter(
-    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
-  );
+  const mergeRequestsWithPipeline = mergeRequests
+    .filter((mr) => !NO_PIPELINE_PROJECTS.includes(mr.name))
+    .map((mr) => mr.name)
+    .join(",");
 
   const queryParams = `branch=${branchName}&repositories=${mergeRequestsWithPipeline}`;
 
