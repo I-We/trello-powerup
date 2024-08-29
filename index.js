@@ -34,7 +34,9 @@ TrelloPowerUp.initialize({
             url,
             title
           ),
-          await generateLaunchPipelinesButton(mergeRequests, branchName),
+          mergeRequests.length
+            ? await generateLaunchPipelinesButton(mergeRequests, branchName)
+            : null,
           mergeRequests.length
             ? await generatePatchedVersionsButton(mergeRequests, branchName)
             : null,
