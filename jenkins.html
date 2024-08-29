@@ -12,6 +12,10 @@
     .checkbox-group {
       margin-bottom: 10px;
     }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
   </style>
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
@@ -34,6 +38,7 @@
       const params = getQueryParams();
       const repositories = params.repositories ? params.repositories.split(",") : [];
       const form = document.getElementById("pipelines");
+      const submitButton = document.querySelector('button[type="submit"]');
 
       repositories.forEach(repository => {
         const div = document.createElement("div");
@@ -47,15 +52,50 @@
         input.name = repository;
         input.checked = true;
 
+        input.addEventListener("change", () => {
+          checkSubmitButtonState();
+        });
+
         label.appendChild(input);
         label.appendChild(document.createTextNode(" " + repository));
 
         div.appendChild(label);
-        form.insertBefore(div, form.lastElementChild);
+        form.insertBefore(div, submitButton);
       });
+
+      checkSubmitButtonState(); // Initial check for button state
+    }
+
+    function checkSubmitButtonState() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      const submitButton = document.querySelector('button[type="submit"]');
+      const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+      submitButton.disabled = !isChecked;
     }
 
     window.onload = createCheckboxes;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("pipelines");
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+        const selectedRepositories = Array.from(checkboxes).map(checkbox => checkbox.name);
+        const params = getQueryParams();
+
+        if (selectedRepositories.length > 0) {
+          // Create a POST request with the selected repositories
+          return fetch(`https://n8n.tools.i-we.io/webhook/2484baa2-311b-4921-a2dd-96ab6c6d49e5?branch=${params.branch}&repositories=${selectedRepositories.join(',')}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+        }
+      });
+    });
   </script>
 </head>
 <body>
