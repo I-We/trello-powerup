@@ -259,7 +259,9 @@ async function generatePatchedVersionsButton(mergeRequests, branchName) {
           "_blank"
         )
         .focus();
-      return t.alert("Patched versions have been copied to your clipboard!");
+      return t.alert({
+        message: "Patched versions have been copied to your clipboard!",
+      });
     },
     refresh: 10,
   };
@@ -317,7 +319,9 @@ async function generateCreateMergeRequestsButton(
     text: "iWE - Merge Requests",
     callback: async function (t) {
       await fetch(endpoint, { method: "POST" });
-      return t.alert("Merge requests are being created on GitLab...");
+      return t.alert({
+        message: "Merge requests are being created on GitLab...",
+      });
     },
   };
 }
