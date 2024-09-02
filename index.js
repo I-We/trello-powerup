@@ -243,10 +243,14 @@ async function generatePatchedVersionsButton(mergeRequests, branchName) {
   const hasFunctionalTests = mergeRequests.filter(
     (mr) => mr.name === "functionnal-tests"
   ).length;
+  const hasAppQaft = mergeRequests.filter(
+    (mr) => mr.name === "app-qaft"
+  ).length;
   const patchedVersions = encodeURIComponent(
     [
       ...images,
       hasFunctionalTests ? `ft:resourceBranch: ${branchName}` : null,
+      hasAppQaft ? `ft:qaftBranch : ${branchName}` : null,
     ].join("\n")
   );
   return {
@@ -289,9 +293,13 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
   const hasFunctionalTests = mergeRequests.filter(
     (mr) => mr.name === "functionnal-tests"
   ).length;
+  const hasAppQaft = mergeRequests.filter(
+    (mr) => mr.name === "app-qaft"
+  ).length;
   const patchedVersions = [
     ...images,
     hasFunctionalTests ? `ft:resourceBranch: ${branchName}` : null,
+    hasAppQaft ? `ft:qaftBranch: ${branchName}` : null,
   ].join("&");
   return {
     icon: IWE_LOGO,
