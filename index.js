@@ -378,7 +378,7 @@ async function generateFtBadges(mergeRequests, branchName) {
     })
   );
 
-  if (!images.length || images.includes(null)) return null;
+  if (!images.length || images.includes(null)) return [];
 
   const patchedVersions = images.reduce(
     (obj, patchedVersion) => ({ ...obj, ...patchedVersion }),
