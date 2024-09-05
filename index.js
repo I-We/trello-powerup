@@ -76,9 +76,10 @@ TrelloPowerUp.initialize({
           branchName,
           "Jenkins"
         );
+        const ftBadges = await generateFtBadges(mergeRequests, branchName);
 
         const awaitedBadges = await Promise.all(
-          [...gitlabBadges, ...jenkinsBadges].filter(Boolean)
+          [...gitlabBadges, ...jenkinsBadges, ...ftBadges].filter(Boolean)
         );
 
         return awaitedBadges;
@@ -357,4 +358,35 @@ async function generateLaunchPipelinesButton(mergeRequests, branchName) {
       });
     },
   };
+}
+
+async function generateFtBadges(mergeRequests, branchName) {
+  const mergeRequestsWithPipeline = mergeRequests.filter(
+    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
+  );
+  const images = await Promise.all(
+    mergeRequestsWithPipeline.map(async (mr) => {
+      const response = await fetch(
+        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`
+      );
+      if (response.status === 404) return null;
+      const body = await response.json();
+      const componentName = mr.name.split("-").slice(1).join("_").toUpperCase();
+      return { [`VERSION_${componentName}`]: body.tag };
+    })
+  );
+
+  if (!images.length || images.includes(null)) return null;
+
+  const patchedVersions = images.reduce(
+    (obj, patchedVersion) => ({ ...obj, ...patchedVersion }),
+    {}
+  );
+
+  const ftBadges = await fetch(
+    "https://n8n.tools.i-we.io/webhook/00e71c0d-7031-4afe-a124-68adddc29a43",
+    { body: { branch: branchName, patchedVersions } }
+  );
+
+  return ftBadges;
 }
