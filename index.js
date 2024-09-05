@@ -385,7 +385,7 @@ async function generateFtBadges(mergeRequests, branchName) {
 
   const params = new URLSearchParams({
     branch: branchName,
-    patchedVersions,
+    patchedVersions: JSON.stringify(patchedVersions),
   });
 
   const ftBadgesResponse = await fetch(
