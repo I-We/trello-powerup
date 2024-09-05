@@ -77,10 +77,12 @@ TrelloPowerUp.initialize({
           "Jenkins"
         );
         const ftBadges = await generateFtBadges(mergeRequests, branchName);
+        console.log(ftBadges);
 
         const awaitedBadges = await Promise.all(
           [...gitlabBadges, ...jenkinsBadges, ...ftBadges].filter(Boolean)
         );
+        console.log(awaitedBadges);
 
         return awaitedBadges;
       });
@@ -392,7 +394,6 @@ async function generateFtBadges(mergeRequests, branchName) {
     `https://n8n.tools.i-we.io/webhook/00e71c0d-7031-4afe-a124-68adddc29a43?${params.toString()}`
   );
   const ftBadges = await ftBadgesResponse.json();
-  console.log(ftBadges);
 
   return ftBadges;
 }
