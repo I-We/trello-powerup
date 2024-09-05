@@ -383,9 +383,13 @@ async function generateFtBadges(mergeRequests, branchName) {
     {}
   );
 
+  const params = new URLSearchParams({
+    branch: branchName,
+    patchedVersions,
+  });
+
   const ftBadgesResponse = await fetch(
-    "https://n8n.tools.i-we.io/webhook/00e71c0d-7031-4afe-a124-68adddc29a43",
-    { method: "POST", body: { branch: branchName, patchedVersions } }
+    `https://n8n.tools.i-we.io/webhook/00e71c0d-7031-4afe-a124-68adddc29a43?${params.toString()}`
   );
   const ftBadges = await ftBadgesResponse.json();
 
