@@ -200,12 +200,17 @@ async function generateGroupedBadges(mergeRequests, branchName, platform) {
 
 // Helper function to generate status badges
 function generateStatusBadge(mergeRequest, branchName, platform) {
+  const params = new URLSearchParams({
+    repository: mergeRequest.name,
+    branch: branchName,
+    merge_request_id: mergeRequest.id,
+  });
   const platformMap = {
     GitLab: sanitize(
-      `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`
+      `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`
     ),
     Jenkins: sanitize(
-      `https://n8n.tools.i-we.io/webhook/6bc11b9a-a602-437b-b021-7a40032c06c2?repository=${mergeRequest.name}&branch=${branchName}&merge_request_id=${mergeRequest.id}`
+      `https://n8n.tools.i-we.io/webhook/6bc11b9a-a602-437b-b021-7a40032c06c2?${params.toString()}`
     ),
   };
 
@@ -231,8 +236,12 @@ async function generatePatchedVersionsButton(mergeRequests, branchName) {
   );
   const images = await Promise.all(
     mergeRequestsWithPipeline.map(async (mr) => {
+      const params = new URLSearchParams({
+        repository: mr.name,
+        branch: branchName,
+      });
       const response = await fetch(
-        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`
+        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
       );
       if (response.status === 404) return null;
       const body = await response.json();
@@ -281,8 +290,12 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
   );
   const images = await Promise.all(
     mergeRequestsWithPipeline.map(async (mr) => {
+      const params = new URLSearchParams({
+        repository: mr.name,
+        branch: branchName,
+      });
       const response = await fetch(
-        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`
+        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
       );
       if (response.status === 404) return null;
       const body = await response.json();
@@ -323,7 +336,15 @@ async function generateCreateMergeRequestsButton(
   url,
   title
 ) {
-  const endpoint = `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?title=${title}&cardId=${id}&trelloUserId=${userId}&branch=${branchName}&url=${url}`;
+  const params = new URLSearchParams({
+    branch: branchName,
+    title,
+    cardId: id,
+    trelloUserId: userId,
+    url,
+  });
+
+  const endpoint = `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?${params.toString()}`;
 
   return {
     icon: IWE_LOGO,
@@ -368,8 +389,12 @@ async function generateFtBadges(mergeRequests, branchName) {
   );
   const images = await Promise.all(
     mergeRequestsWithPipeline.map(async (mr) => {
+      const params = new URLSearchParams({
+        repository: mr.name,
+        branch: branchName,
+      });
       const response = await fetch(
-        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?repository=${mr.name}&branch=${branchName}`
+        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
       );
       if (response.status === 404) return null;
       const body = await response.json();
