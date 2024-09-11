@@ -123,7 +123,9 @@ function generateBranchNameButton(branchName) {
     callback: (t) => {
       window
         .open(
-          `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`,
+          sanitize(
+            `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`
+          ),
           "_blank"
         )
         .focus();
@@ -241,7 +243,9 @@ async function generatePatchedVersionsButton(mergeRequests, branchName) {
         branch: branchName,
       });
       const response = await fetch(
-        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
+        sanitize(
+          `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
+        )
       );
       if (response.status === 404) return null;
       const body = await response.json();
@@ -271,7 +275,9 @@ async function generatePatchedVersionsButton(mergeRequests, branchName) {
     callback: (t) => {
       window
         .open(
-          `https://lweinhard.github.io/copy-and-close.html?value=${patchedVersions}`,
+          sanitize(
+            `https://lweinhard.github.io/copy-and-close.html?value=${patchedVersions}`
+          ),
           "_blank"
         )
         .focus();
@@ -295,7 +301,9 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
         branch: branchName,
       });
       const response = await fetch(
-        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
+        sanitize(
+          `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
+        )
       );
       if (response.status === 404) return null;
       const body = await response.json();
@@ -344,7 +352,9 @@ async function generateCreateMergeRequestsButton(
     url,
   });
 
-  const endpoint = `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?${params.toString()}`;
+  const endpoint = sanitize(
+    `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?${params.toString()}`
+  );
 
   return {
     icon: IWE_LOGO,
@@ -360,7 +370,7 @@ async function generateCreateMergeRequestsButton(
 
 // Sanitize strings to remove unwanted characters
 function sanitize(str) {
-  return str.replace(/[\u200C\u200B]/g, "").trim();
+  return str.replace(/%E2%80%8C/g, "").trim();
 }
 
 async function generateLaunchPipelinesButton(mergeRequests, branchName) {
@@ -394,7 +404,9 @@ async function generateFtBadges(mergeRequests, branchName) {
         branch: branchName,
       });
       const response = await fetch(
-        `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
+        sanitize(
+          `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
+        )
       );
       if (response.status === 404) return null;
       const body = await response.json();
@@ -416,7 +428,9 @@ async function generateFtBadges(mergeRequests, branchName) {
   });
 
   const ftBadgesResponse = await fetch(
-    `https://n8n.tools.i-we.io/webhook/00e71c0d-7031-4afe-a124-68adddc29a43?${params.toString()}`
+    sanitize(
+      `https://n8n.tools.i-we.io/webhook/00e71c0d-7031-4afe-a124-68adddc29a43?${params.toString()}`
+    )
   );
   const ftBadges = await ftBadgesResponse.json();
 
