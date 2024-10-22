@@ -50,62 +50,23 @@ TrelloPowerUp.initialize({
   "card-detail-badges": function (t, options) {
     return t
       .card("desc", "customFieldItems")
-      .then(async function ({ desc, customFieldItems }) {
-        const sections = desc.split("---");
-        if (sections.length < 2) {
-          return [];
-        }
-
-        const header = sections[0];
+      .then(async function ({ customFieldItems }) {
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
         );
-        const mergeRequests = parseMergeRequests(header);
-        const mergeRequestsWithPipeline = mergeRequests.filter(
-          (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
-        );
 
-        const gitlabBadges = await generateGroupedBadges(
-          mergeRequests,
-          branchName,
-          "GitLab"
-        );
-        const jenkinsBadges = await generateGroupedBadges(
-          mergeRequestsWithPipeline,
-          branchName,
-          "Jenkins"
-        );
+        const gitlabAndJenkinsBadges = generateGitlabAndJenkinsBadges(branchName);
         const ftBadges = await generateFtBadges(mergeRequests, branchName);
-        console.log(ftBadges);
 
         const awaitedBadges = await Promise.all(
-          [...gitlabBadges, ...jenkinsBadges, ...ftBadges].filter(Boolean)
+          [...gitlabAndJenkinsBadges, ...ftBadges].filter(Boolean)
         );
-        console.log(awaitedBadges);
 
         return awaitedBadges;
       });
   },
 });
-
-// Helper function to parse merge requests from the card header
-function parseMergeRequests(header) {
-  const regex = /\• \[([^\]]+)\]\(([^)]+)\)/g;
-  const mergeRequests = [];
-  let match;
-
-  while ((match = regex.exec(header))) {
-    const cleanedUrl = match[2].replace(/["\s]/g, "").trim();
-    mergeRequests.push({
-      name: match[1],
-      url: cleanedUrl,
-      id: cleanedUrl.split("/").pop(),
-    });
-  }
-
-  return mergeRequests;
-}
 
 // Helper function to get custom field value
 function getCustomFieldValue(customFieldItems, customFieldId) {
@@ -136,99 +97,15 @@ function generateBranchNameButton(branchName) {
   };
 }
 
-// Helper function to generate grouped badges
-async function generateGroupedBadges(mergeRequests, branchName, platform) {
-  const badges = [];
-
-  for (const mr of mergeRequests) {
-    const badge = generateStatusBadge(mr, branchName, platform);
-    if (badge) {
-      badges.push(badge);
-    }
-  }
-
-  // Group badges by status
-  const groupedBadges = {
-    mergeable: [],
-    merged: [],
-    success: [],
-    others: [],
-  };
-
-  for (const badge of badges) {
-    const current = await badge.dynamic();
-    if (platform === "GitLab") {
-      if (current.text === "mergeable") groupedBadges.mergeable.push(badge);
-      else if (current.text === "merged") groupedBadges.merged.push(badge);
-      else groupedBadges.others.push(badge);
-    } else if (platform === "Jenkins") {
-      if (current.text === "Success") groupedBadges.success.push(badge);
-      else if (current.text !== "Waiting for tests")
-        groupedBadges.others.push(badge);
-    }
-  }
-
-  const mergeRequestsWithPipeline = mergeRequests.filter(
-    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
-  );
-
-  // Create final badge set
-  const finalBadges = [];
-  if (groupedBadges.merged.length) {
-    finalBadges.push({
-      title: platform,
-      text: `merged (${groupedBadges.merged.length}/${mergeRequests.length})`,
-      color: "purple",
-    });
-  }
-  if (groupedBadges.mergeable.length) {
-    finalBadges.push({
-      title: platform,
-      text: `mergeable (${groupedBadges.mergeable.length}/${mergeRequests.length})`,
-      color: "green",
-    });
-  }
-  if (groupedBadges.success.length) {
-    finalBadges.push({
-      title: platform,
-      text: `Success (${groupedBadges.success.length}/${mergeRequestsWithPipeline.length})`,
-      color: "green",
-    });
-  }
-  finalBadges.push(...groupedBadges.others);
-
-  return finalBadges;
-}
-
-// Helper function to generate status badges
-function generateStatusBadge(mergeRequest, branchName, platform) {
+// Helper function to generate GitLab badges
+async function generateGitlabAndJenkinsBadges(branchName) {
   const params = new URLSearchParams({
-    repository: mergeRequest.name,
     branch: branchName,
-    merge_request_id: mergeRequest.id,
   });
-  const platformMap = {
-    GitLab: sanitize(
-      `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`
-    ),
-    Jenkins: sanitize(
-      `https://n8n.tools.i-we.io/webhook/6bc11b9a-a602-437b-b021-7a40032c06c2?${params.toString()}`
-    ),
-  };
+  const response = await fetch(`https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`);
+  const badges = await response.json();
 
-  return {
-    dynamic: async () => {
-      const response = await fetch(platformMap[platform]);
-      const body = await response.json();
-      return {
-        title: `${mergeRequest.name} - ${platform}`,
-        text: body.message,
-        color: body.color,
-        ...(body.url ? { url: body.url } : {}),
-        refresh: 10,
-      };
-    },
-  };
+  return badges;
 }
 
 // Helper function to generate patched versions button
