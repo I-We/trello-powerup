@@ -86,7 +86,6 @@ function generateBranchNameButton(branchName) {
 
 // Helper function to generate GitLab badges
 async function generateGitlabAndJenkinsBadges(branchName) {
-
       const params = new URLSearchParams({
         branch: branchName,
       });
