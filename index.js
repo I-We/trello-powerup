@@ -48,8 +48,9 @@ TrelloPowerUp.initialize({
           "66a7b730211062b563b92f53"
         );
 
-        const dynamicBadges = await gitlabAndJenkinsBadges.dynamic();
+        const gitlabAndJenkinsBadges = await generateGitlabAndJenkinsBadges(branchName);
 
+        const dynamicBadges = await gitlabAndJenkinsBadges.dynamic();
         return dynamicBadges;
       });
   },
