@@ -19,7 +19,6 @@ TrelloPowerUp.initialize({
           return [];
         }
         const header = sections[0];
-        const mergeRequests = parseMergeRequests(header);
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
@@ -33,17 +32,10 @@ TrelloPowerUp.initialize({
             members[0].id,
             url,
             title
-          ),
-          mergeRequests.length
-            ? await generateLaunchPipelinesButton(mergeRequests, branchName)
-            : null,
-          mergeRequests.length
-            ? await generatePatchedVersionsButton(mergeRequests, branchName)
-            : null,
-          await generateLaunchPreviewButton(mergeRequests, branchName),
+          )
         ];
 
-        return buttons.filter(Boolean); // Remove nulls
+        return buttons.filter(Boolean);
       });
   },
 
