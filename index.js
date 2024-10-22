@@ -50,8 +50,7 @@ TrelloPowerUp.initialize({
 
         const gitlabAndJenkinsBadges = await generateGitlabAndJenkinsBadges(branchName);
 
-        const dynamicBadges = await gitlabAndJenkinsBadges.dynamic();
-        return dynamicBadges;
+        return [gitlabAndJenkinsBadges];
       });
   },
 });
@@ -96,7 +95,7 @@ async function generateGitlabAndJenkinsBadges(branchName) {
       const badges = await response.json();
       console.log(badges)
     
-      return badges.map((badge) => ({ ...badge, refresh: 10}));
+      return badges.map((badge) => ({ ...badge, refresh: 30}));
     }
   }
 }
