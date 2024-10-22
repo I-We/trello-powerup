@@ -14,11 +14,6 @@ TrelloPowerUp.initialize({
         url,
         name: title,
       }) {
-        const sections = desc.split("---");
-        if (sections.length < 2) {
-          return [];
-        }
-        const header = sections[0];
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
