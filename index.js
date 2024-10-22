@@ -57,10 +57,9 @@ TrelloPowerUp.initialize({
         );
 
         const gitlabAndJenkinsBadges = generateGitlabAndJenkinsBadges(branchName);
-        const ftBadges = await generateFtBadges(mergeRequests, branchName);
 
         const awaitedBadges = await Promise.all(
-          [...gitlabAndJenkinsBadges, ...ftBadges].filter(Boolean)
+          [...gitlabAndJenkinsBadges].filter(Boolean)
         );
 
         return awaitedBadges;
@@ -99,13 +98,17 @@ function generateBranchNameButton(branchName) {
 
 // Helper function to generate GitLab badges
 async function generateGitlabAndJenkinsBadges(branchName) {
-  const params = new URLSearchParams({
-    branch: branchName,
-  });
-  const response = await fetch(`https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`);
-  const badges = await response.json();
-
-  return badges;
+  return {
+    dynamic: async () => {
+      const params = new URLSearchParams({
+        branch: branchName,
+      });
+      const response = await fetch(`https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`);
+      const badges = await response.json();
+    
+      return badges.map((badge) => ({ ...badge, refresh: 10}));
+    }
+  }
 }
 
 // Helper function to generate patched versions button
