@@ -19,6 +19,10 @@ TrelloPowerUp.initialize({
           "66a7b730211062b563b92f53"
         );
 
+        if (!branchName) {
+          return null;
+        }
+
         const buttons = [
           branchName ? generateBranchNameButton(branchName, t) : null,
           await generateCreateMergeRequestsButton(
@@ -36,12 +40,16 @@ TrelloPowerUp.initialize({
 
   "card-detail-badges": function (t, options) {
     return t
-      .card("desc", "customFieldItems")
+      .card("customFieldItems")
       .then(async function ({ customFieldItems }) {
         const branchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
         );
+
+        if (!branchName) {
+          return null;
+        }
 
         const gitlabAndJenkinsBadges = await generateGitlabAndJenkinsBadges(branchName);
 
