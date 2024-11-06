@@ -31,8 +31,8 @@ TrelloPowerUp.initialize({
             members[0].fullName,
             url,
             title
-          )
-          // await generatePatchedVersionsButton(branchName)
+          ),
+          await generatePatchedVersionsButton(branchName)
         ];
 
         return buttons.filter(Boolean);
@@ -100,105 +100,21 @@ async function generateGitlabAndJenkinsBadges(branchName) {
 }
 
 // Helper function to generate patched versions button
-async function generatePatchedVersionsButton(mergeRequests, branchName) {
-  const images = await Promise.all(
-    mergeRequests.map(async (mr) => {
-      const params = new URLSearchParams({
-        repository: mr.name,
-        branch: branchName,
-      });
-      const response = await fetch(
-        sanitize(
-          `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
-        )
-      );
-      if (response.status === 404) return null;
-      const body = await response.json();
-      const componentName = mr.name.split("-").slice(1).join("_").toUpperCase();
-      return `VERSION_${componentName}: ${body.tag}`;
-    })
+async function generatePatchedVersionsButton(branchName) {
+  const params = new URLSearchParams({
+    branch: branchName,
+  });
+  const response = await fetch(
+    sanitize(
+      `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`
+    )
   );
-  if (!images.length || images.includes(null)) return null;
-
-  const hasFunctionalTests = mergeRequests.filter(
-    (mr) => mr.name === "functionnal-tests"
-  ).length;
-  const hasAppQaft = mergeRequests.filter(
-    (mr) => mr.name === "app-qaft"
-  ).length;
-  const patchedVersions = encodeURIComponent(
-    [
-      ...images,
-      hasFunctionalTests ? `ft:resourceBranch: ${branchName}` : null,
-      hasAppQaft ? `ft:qaftBranch : ${branchName}` : null,
-    ].join("\n")
-  );
+  const button = await response.json();
+  
   return {
+    ...button,
     icon: IWE_LOGO,
-    text: `iWE - Patched versions`,
-    callback: (t) => {
-      window
-        .open(
-          sanitize(
-            `https://lweinhard.github.io/copy-and-close.html?value=${patchedVersions}`
-          ),
-          "_blank"
-        )
-        .focus();
-      return t.alert({
-        message: "Patched versions have been copied to your clipboard!",
-      });
-    },
-    refresh: 60,
-  };
-}
-
-// Helper function to generate launch preview button
-async function generateLaunchPreviewButton(mergeRequests, branchName) {
-  const mergeRequestsWithPipeline = mergeRequests.filter(
-    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
-  );
-  const images = await Promise.all(
-    mergeRequestsWithPipeline.map(async (mr) => {
-      const params = new URLSearchParams({
-        repository: mr.name,
-        branch: branchName,
-      });
-      const response = await fetch(
-        sanitize(
-          `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
-        )
-      );
-      if (response.status === 404) return null;
-      const body = await response.json();
-      const componentName = mr.name.split("-").slice(1).join("_").toUpperCase();
-      return `VERSION_${componentName}=${body.tag}`;
-    })
-  );
-
-  if (!images.length || images.includes(null)) return null;
-
-  const hasFunctionalTests = mergeRequests.filter(
-    (mr) => mr.name === "functionnal-tests"
-  ).length;
-  const hasAppQaft = mergeRequests.filter(
-    (mr) => mr.name === "app-qaft"
-  ).length;
-  const patchedVersions = [
-    ...images,
-    hasFunctionalTests ? `ft:resourceBranch: ${branchName}` : null,
-    hasAppQaft ? `ft:qaftBranch: ${branchName}` : null,
-  ].join("&");
-  return {
-    icon: IWE_LOGO,
-    text: "iWE - Preview",
-    callback: function (t) {
-      return t.popup({
-        title: "iWE - Preview",
-        url: `preview.html?${patchedVersions}`,
-      });
-    },
-  };
+  }
 }
 
 async function generateCreateMergeRequestsButton(
@@ -232,7 +148,6 @@ async function generateCreateMergeRequestsButton(
   };
 }
 
-// Sanitize strings to remove unwanted characters
 function sanitize(str) {
   return str.replace(/%E2%80%8C/g, "").trim();
 }
@@ -255,48 +170,4 @@ async function generateLaunchPipelinesButton(mergeRequests, branchName) {
       });
     },
   };
-}
-
-async function generateFtBadges(mergeRequests, branchName) {
-  const mergeRequestsWithPipeline = mergeRequests.filter(
-    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
-  );
-  const images = await Promise.all(
-    mergeRequestsWithPipeline.map(async (mr) => {
-      const params = new URLSearchParams({
-        repository: mr.name,
-        branch: branchName,
-      });
-      const response = await fetch(
-        sanitize(
-          `https://n8n.tools.i-we.io/webhook/15a4a541-34ea-4742-9120-d899e8dd23a0?${params.toString()}`
-        )
-      );
-      if (response.status === 404) return null;
-      const body = await response.json();
-      const componentName = mr.name.split("-").slice(1).join("_").toUpperCase();
-      return { [`VERSION_${componentName}`]: body.tag };
-    })
-  );
-
-  if (!images.length || images.includes(null)) return [];
-
-  const patchedVersions = images.reduce(
-    (obj, patchedVersion) => ({ ...obj, ...patchedVersion }),
-    {}
-  );
-
-  const params = new URLSearchParams({
-    branch: branchName,
-    patchedVersions: JSON.stringify(patchedVersions),
-  });
-
-  const ftBadgesResponse = await fetch(
-    sanitize(
-      `https://n8n.tools.i-we.io/webhook/00e71c0d-7031-4afe-a124-68adddc29a43?${params.toString()}`
-    )
-  );
-  const ftBadges = await ftBadgesResponse.json();
-
-  return ftBadges;
 }
