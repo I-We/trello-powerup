@@ -25,13 +25,13 @@ TrelloPowerUp.initialize({
 
         const buttons = [
           branchName ? generateBranchNameButton(branchName, t) : null,
-          await generateCreateMergeRequestsButton(
+          branchName ? await generateCreateMergeRequestsButton(
             branchName,
             id,
-            members[0].id,
+            members[0].fullName,
             url,
             title
-          )
+          ) : null
         ];
 
         return buttons.filter(Boolean);
@@ -89,14 +89,13 @@ function generateBranchNameButton(branchName) {
 
 // Helper function to generate GitLab badges
 async function generateGitlabAndJenkinsBadges(branchName) {
-      const params = new URLSearchParams({
-        branch: branchName,
-      });
-      const response = await fetch(`https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`);
-      const badges = await response.json();
-      console.log(badges);
-    
-      return badges;
+  const params = new URLSearchParams({
+    branch: branchName,
+  });
+  const response = await fetch(`https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`);
+  const badges = await response.json();
+
+  return badges;
 }
 
 // Helper function to generate patched versions button
@@ -153,7 +152,7 @@ async function generatePatchedVersionsButton(mergeRequests, branchName) {
         message: "Patched versions have been copied to your clipboard!",
       });
     },
-    refresh: 10,
+    refresh: 60,
   };
 }
 
@@ -208,7 +207,7 @@ async function generateLaunchPreviewButton(mergeRequests, branchName) {
 async function generateCreateMergeRequestsButton(
   branchName,
   id,
-  userId,
+  userFullName,
   url,
   title
 ) {
@@ -216,7 +215,7 @@ async function generateCreateMergeRequestsButton(
     branch: branchName,
     title,
     cardId: id,
-    trelloUserId: userId,
+    trelloUserFullName: userFullName,
     url,
   });
 
