@@ -24,14 +24,15 @@ TrelloPowerUp.initialize({
         }
 
         const buttons = [
-          branchName ? generateBranchNameButton(branchName, t) : null,
-          branchName ? await generateCreateMergeRequestsButton(
+          generateBranchNameButton(branchName, t),
+          await generateCreateMergeRequestsButton(
             branchName,
             id,
             members[0].fullName,
             url,
             title
-          ) : null
+          )
+          // await generatePatchedVersionsButton(branchName)
         ];
 
         return buttons.filter(Boolean);
@@ -100,11 +101,8 @@ async function generateGitlabAndJenkinsBadges(branchName) {
 
 // Helper function to generate patched versions button
 async function generatePatchedVersionsButton(mergeRequests, branchName) {
-  const mergeRequestsWithPipeline = mergeRequests.filter(
-    (mr) => !NO_PIPELINE_PROJECTS.includes(mr.name)
-  );
   const images = await Promise.all(
-    mergeRequestsWithPipeline.map(async (mr) => {
+    mergeRequests.map(async (mr) => {
       const params = new URLSearchParams({
         repository: mr.name,
         branch: branchName,
@@ -120,7 +118,6 @@ async function generatePatchedVersionsButton(mergeRequests, branchName) {
       return `VERSION_${componentName}: ${body.tag}`;
     })
   );
-
   if (!images.length || images.includes(null)) return null;
 
   const hasFunctionalTests = mergeRequests.filter(
