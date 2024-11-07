@@ -109,12 +109,25 @@ async function generatePatchedVersionsButton(branchName) {
       `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`
     )
   );
-  const button = await response.json();
-  console.log(button);
+  const patchedVersions = await response.json();
 
   return {
-    ...button,
     icon: IWE_LOGO,
+    text: 'iWE - Patched Versions',
+    callback: (t) => {
+      window
+        .open(
+          sanitize(
+            `https://lweinhard.github.io/copy-and-close.html?value=${patchedVersions}`
+          ),
+          "_blank"
+        )
+        .focus();
+      return t.alert({
+        message: "Patched versions have been copied to your clipboard!",
+      });
+    },
+    refresh: 60,
   }
 }
 
