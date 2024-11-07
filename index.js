@@ -172,7 +172,7 @@ function sanitize(str) {
 async function generateLaunchPipelinesButton(branchName) {
   const params = new URLSearchParams({branch: branchName});
 const response = await fetch(`https://n8n.tools.i-we.io/webhook/92beefb2-760b-4a3a-837d-5788a2c340e7?${params.toString()}`);
-const {repositories} = await response.json();
+const repositories = await response.json();
 
   return {
     icon: IWE_LOGO,
@@ -180,7 +180,7 @@ const {repositories} = await response.json();
     callback: function (t) {
       return t.popup({
         title: "iWE - Jenkins",
-        url: `jenkins.html?branch=${branchName}&repositories=${repositories.join(',')}`,
+        url: `jenkins.html?branch=${branchName}&repositories=${repositories.map((item) => item.repository).join(',')}`,
       });
     },
   };
