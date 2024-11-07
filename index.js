@@ -111,7 +111,7 @@ async function generatePatchedVersionsButton(branchName) {
       `https://n8n.tools.i-we.io/webhook/b9ff3b81-0713-480a-96ed-ccd8fedc3c64?${params.toString()}`
     )
   );
-  const patchedVersions = await response.json();
+  const {patchedVersions} = await response.json();
 
   return {
     icon: IWE_LOGO,
