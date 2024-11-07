@@ -22,18 +22,17 @@ TrelloPowerUp.initialize({
           return null;
         }
 
-        const buttons = [
+        const buttons = await Promise.all([
           generateBranchNameButton(branchName, t),
-          await generateCreateMergeRequestsButton(
+          generateCreateMergeRequestsButton(
             branchName,
             id,
             members[0].fullName,
             url,
             title
           ),
-          await generatePatchedVersionsButton(branchName),
-          await generateLaunchPipelinesButton(branchName)
-        ];
+          generatePatchedVersionsButton(branchName),
+          generateLaunchPipelinesButton(branchName)]);
 
         return buttons.filter(Boolean);
       });
@@ -70,7 +69,7 @@ function getCustomFieldValue(customFieldItems, customFieldId) {
 }
 
 // Helper function to generate Branch Name button
-function generateBranchNameButton(branchName) {
+async function generateBranchNameButton(branchName) {
   return {
     icon: IWE_LOGO,
     text: "iWE - Branche",
