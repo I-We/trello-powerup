@@ -110,7 +110,8 @@ async function generatePatchedVersionsButton(branchName) {
     )
   );
   const button = await response.json();
-  
+  console.log(button);
+
   return {
     ...button,
     icon: IWE_LOGO,
