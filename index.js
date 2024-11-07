@@ -5,9 +5,8 @@ const IWE_LOGO =
 TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
-      .card("desc", "customFieldItems", "id", "members", "url", "name")
+      .card("customFieldItems", "id", "members", "url", "name")
       .then(async function ({
-        desc,
         customFieldItems,
         id,
         members,
@@ -52,7 +51,9 @@ TrelloPowerUp.initialize({
           return null;
         }
 
+        console.log('generating badges')
         const gitlabAndJenkinsBadges = await generateGitlabAndJenkinsBadges(branchName);
+        console.log('rendering badges')
 
         return gitlabAndJenkinsBadges;
       });
