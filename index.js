@@ -108,7 +108,7 @@ async function generatePatchedVersionsButton(branchName) {
   });
   const response = await fetch(
     sanitize(
-      `https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`
+      `https://n8n.tools.i-we.io/webhook/b9ff3b81-0713-480a-96ed-ccd8fedc3c64?${params.toString()}`
     )
   );
   const patchedVersions = await response.json();
