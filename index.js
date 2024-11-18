@@ -75,7 +75,7 @@ async function generateBranchNameButton(branchName) {
       window
         .open(
           sanitize(
-            `https://lweinhard.github.io/copy-and-close.html?value=${branchName}`
+            `https://i-we.github.io/trello-powerup/copy-and-close.html?value=${branchName}`
           ),
           "_blank"
         )
@@ -117,7 +117,7 @@ async function generatePatchedVersionsButton(branchName) {
       window
         .open(
           sanitize(
-            `https://lweinhard.github.io/copy-and-close.html?value=${patchedVersions}`
+            `https://i-we.github.io/trello-powerup/copy-and-close.html?value=${patchedVersions}`
           ),
           "_blank"
         )
