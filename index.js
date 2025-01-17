@@ -23,7 +23,7 @@ TrelloPowerUp.initialize({
           return null;
         }
 
-        const isBugfix = labels.some((label) => label.name.includes('Bug') || label.includes('HotFix'));
+        const isBugfix = labels.some((label) => label.name.includes('Bug') || label.name.includes('HotFix'));
 
         const buttons = await Promise.all([
           generateBranchNameButton(branchName, t),
