@@ -5,13 +5,14 @@ const IWE_LOGO =
 TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
-      .card("customFieldItems", "id", "members", "url", "name")
+      .card("customFieldItems", "id", "members", "url", "name", "labels")
       .then(async function ({
         customFieldItems,
         id,
         members,
         url,
         name: title,
+        labels
       }) {
         const branchName = getCustomFieldValue(
           customFieldItems,
@@ -21,6 +22,8 @@ TrelloPowerUp.initialize({
         if (!branchName) {
           return null;
         }
+
+        const isBugfix = labels.some((label) => label.includes('Bug') || label.includes('HotFix'));
 
         const buttons = await Promise.all([
           generateBranchNameButton(branchName, t),
@@ -32,7 +35,9 @@ TrelloPowerUp.initialize({
             title
           ),
           generatePatchedVersionsButton(branchName),
-          generateLaunchPipelinesButton(branchName)]);
+          generateLaunchPipelinesButton(branchName),
+          generateReleaseDocumentButton(branchName, id, title, isBugfix)
+      ]);
 
         return buttons.filter(Boolean);
       });
@@ -64,6 +69,35 @@ function getCustomFieldValue(customFieldItems, customFieldId) {
     (item) => item.idCustomField === customFieldId
   );
   return field ? field.value.text : null;
+}
+
+// Helper function to generate release document button
+async function generateReleaseDocumentButton(
+  branchName,
+  id,
+  title,
+  isBugfix) {
+  const params = new URLSearchParams({
+    branchName,
+    cardId: id,
+    title,
+    isBugfix
+  });
+
+  const endpoint = sanitize(
+    `https://n8n.tools.i-we.io/webhook/0cc6fe98-a97e-4b2e-a42d-50c9ceee6d13?${params.toString()}`
+  );
+
+  return {
+    icon: IWE_LOGO,
+    text: "iWE - Release doc",
+    callback: async function (t) {
+      await fetch(endpoint, { method: "POST" });
+      return t.alert({
+        message: "Release document has been generated and attached !",
+      });
+    },
+  };
 }
 
 // Helper function to generate Branch Name button
