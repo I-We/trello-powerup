@@ -23,6 +23,8 @@ TrelloPowerUp.initialize({
           return null;
         }
 
+        const myTickets = getCustomFieldValue(customFieldItems, '6593ebbb699e895d318adbfa')?.replace(' ', '').split(',') ?? [];
+
         const isBugfix = labels.some((label) => label.name.includes('Bug') || label.name.includes('HotFix'));
 
         const buttons = await Promise.all([
@@ -36,7 +38,7 @@ TrelloPowerUp.initialize({
           ),
           generatePatchedVersionsButton(branchName),
           generateLaunchPipelinesButton(branchName),
-          generateReleaseDocumentButton(branchName, id, title, isBugfix)
+          generateReleaseDocumentButton(branchName, id, title, isBugfix, myTickets)
       ]);
 
         return buttons.filter(Boolean);
@@ -76,12 +78,14 @@ async function generateReleaseDocumentButton(
   branchName,
   id,
   title,
-  isBugfix) {
+  isBugfix,
+  myTickets) {
   const params = new URLSearchParams({
     branchName,
     cardId: id,
     title,
-    isBugfix
+    isBugfix,
+    myTickets
   });
 
   const endpoint = sanitize(
