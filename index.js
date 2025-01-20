@@ -23,7 +23,7 @@ TrelloPowerUp.initialize({
           return null;
         }
 
-        const myTickets = getCustomFieldValue(customFieldItems, '6593ebbb699e895d318adbfa')?.replace(' ', '').split(',') ?? [];
+        const myTickets = getCustomFieldValue(customFieldItems, '6593ebbb699e895d318adbfa')?.replace(' ', '') ?? '';
 
         const isBugfix = labels.some((label) => label.name.includes('Bug') || label.name.includes('HotFix'));
 
