@@ -19,6 +19,8 @@
   </style>
   <script src="https://p.trellocdn.com/power-up.min.js"></script>
   <script>
+    const t = TrelloPowerUp.iframe();
+    
     function getQueryParams() {
       const params = {};
       const queryString = window.location.search.substring(1);
@@ -111,7 +113,7 @@
         }
       });
     });
-    
+
   </script>
 </head>
 <body>
