@@ -163,8 +163,7 @@ async function generatePatchedVersionsButton(branchName) {
       return t.alert({
         message: "Patched versions have been copied to your clipboard!",
       });
-    },
-    refresh: 60,
+    }
   }
 }
 
