@@ -14,16 +14,25 @@ TrelloPowerUp.initialize({
         name: title,
         labels
       }) {
-        const branchName = getCustomFieldValue(
+        const platformBranchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
         );
+
+        const deliveryBranchName = getCustomFieldValue(
+          customFieldItems,
+          "6784dcdd88cdd86ab7ab309a"
+        );
+
+        const branchName = platformBranchName || deliveryBranchName;
 
         if (!branchName) {
           return null;
         }
 
-        const myTickets = getCustomFieldValue(customFieldItems, '6593ebbb699e895d318adbfa')?.replace(' ', '') ?? '';
+        const platformMyTickets = getCustomFieldValue(customFieldItems, '6593ebbb699e895d318adbfa')?.replace(' ', '') ?? '';
+        const deliveryMyTickets = getCustomFieldValue(customFieldItems, '678f661e6b95b0f4b69998c7')?.replace(' ', '') ?? '';
+        const myTickets = platformMyTickets || deliveryMyTickets;
 
         const isBugfix = labels.some((label) => label.name.includes('Bug') || label.name.includes('HotFix'));
 
@@ -49,10 +58,17 @@ TrelloPowerUp.initialize({
     return t
       .card("customFieldItems")
       .then(async function ({ customFieldItems }) {
-        const branchName = getCustomFieldValue(
+        const platformBranchName = getCustomFieldValue(
           customFieldItems,
           "66a7b730211062b563b92f53"
         );
+
+        const deliveryBranchName = getCustomFieldValue(
+          customFieldItems,
+          "6784dcdd88cdd86ab7ab309a"
+        );
+
+        const branchName = platformBranchName || deliveryBranchName;
 
         if (!branchName) {
           return null;
