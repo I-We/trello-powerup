@@ -77,7 +77,7 @@ TrelloPowerUp.initialize({
         const gitlabAndJenkinsBadges = await generateGitlabAndJenkinsBadges(branchName);
         const ftBadge = await generateFtBadge(branchName);
 
-        return [...gitlabAndJenkinsBadges, ftBadge].map((badge) => ({ title: badge.title, text: badge.text, color: badge.color, ...(badge.url ? {
+        return [...gitlabAndJenkinsBadges, ...ftBadge].map((badge) => ({ title: badge.title, text: badge.text, color: badge.color, ...(badge.url ? {
           callback: (t) => {
           window
             .open(
