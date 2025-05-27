@@ -56,7 +56,7 @@ TrelloPowerUp.initialize({
 
   "card-detail-badges": function (t, options) {
     return t
-      .card("customFieldItems")
+      .card("customFieldItems", "url")
       .then(async function ({ customFieldItems }) {
         const platformBranchName = getCustomFieldValue(
           customFieldItems,
@@ -75,7 +75,7 @@ TrelloPowerUp.initialize({
         }
 
         const gitlabAndJenkinsBadges = await generateGitlabAndJenkinsBadges(branchName);
-        const ftBadge = await generateFtBadge(branchName);
+        const ftBadge = await generateFtBadge(branchName, url);
 
         return [...gitlabAndJenkinsBadges, ftBadge].map((badge) => ({ title: badge.title, text: badge.text, color: badge.color, ...(badge.url ? {
           callback: (t) => {
@@ -162,9 +162,10 @@ async function generateGitlabAndJenkinsBadges(branchName) {
 }
 
 // Helper function to generate functional tests badge
-async function generateFtBadge(branchName) {
+async function generateFtBadge(branchName, url) {
   const params = new URLSearchParams({
     branch: branchName,
+    url
   });
   const response = await fetch(`https://n8n.tools.i-we.io/webhook/892c71eb-735c-423e-bee8-a9de887423d4?${params.toString()}`);
   const badges = await response.json();
