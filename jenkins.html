@@ -89,7 +89,7 @@
 
         if (selectedRepositories.length > 0) {
           // Create a POST request with the selected repositories
-          const response = await fetch(`https://n8n.tools.i-we.io/webhook/2484baa2-311b-4921-a2dd-96ab6c6d49e5?branch=${params.branch}&repositories=${selectedRepositories.join(',')}`, {
+          const response = await fetch(`https://n8n.tools.i-we.io/webhook/jenkins-pipelines?branch=${params.branch}&repositories=${selectedRepositories.join(',')}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
