@@ -114,7 +114,7 @@ async function generateReleaseDocumentButton(
   });
 
   const endpoint = sanitize(
-    `https://n8n.tools.i-we.io/webhook/0cc6fe98-a97e-4b2e-a42d-50c9ceee6d13?${params.toString()}`
+    `https://n8n.tools.i-we.io/webhook/release-document?${params.toString()}`
   );
 
   return {
@@ -155,7 +155,7 @@ async function generateGitlabAndJenkinsBadges(branchName) {
   const params = new URLSearchParams({
     branch: branchName,
   });
-  const response = await fetch(`https://n8n.tools.i-we.io/webhook/9d86d521-93c9-4e2f-90b5-7e4187c2cc9c?${params.toString()}`);
+  const response = await fetch(`https://n8n.tools.i-we.io/webhook/badges-gitlab-jenkins?${params.toString()}`);
   const badges = await response.json();
 
   return badges;
@@ -168,7 +168,7 @@ async function generateFtBadge(branchName, url, name) {
     url,
     name
   });
-  const response = await fetch(`https://n8n.tools.i-we.io/webhook/892c71eb-735c-423e-bee8-a9de887423d4?${params.toString()}`);
+  const response = await fetch(`https://n8n.tools.i-we.io/webhook/badge-ft?${params.toString()}`);
   const badges = await response.json();
 
   return badges;
@@ -181,7 +181,7 @@ async function generatePatchedVersionsButton(branchName) {
   });
   const response = await fetch(
     sanitize(
-      `https://n8n.tools.i-we.io/webhook/b9ff3b81-0713-480a-96ed-ccd8fedc3c64?${params.toString()}`
+      `https://n8n.tools.i-we.io/webhook/patched-versions?${params.toString()}`
     )
   );
   const {patchedVersions} = await response.json();
@@ -221,7 +221,7 @@ async function generateCreateMergeRequestsButton(
   });
 
   const endpoint = sanitize(
-    `https://n8n.tools.i-we.io/webhook/c35dfd4a-f501-4435-83f7-81b2040da473?${params.toString()}`
+    `https://n8n.tools.i-we.io/webhook/create-merge-requests?${params.toString()}`
   );
 
   return {
@@ -242,7 +242,7 @@ function sanitize(str) {
 
 async function generateLaunchPipelinesButton(branchName) {
   const params = new URLSearchParams({branch: branchName});
-  const response = await fetch(`https://n8n.tools.i-we.io/webhook/92beefb2-760b-4a3a-837d-5788a2c340e7?${params.toString()}`);
+  const response = await fetch(`https://n8n.tools.i-we.io/webhook/jenkins-pipelines?${params.toString()}`);
   const repositories = await response.json();
 
   return {
