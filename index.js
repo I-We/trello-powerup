@@ -93,7 +93,7 @@ TrelloPowerUp.initialize({
     return [{
       icon: IWE_LOGO,
       text: "iWE - Release",
-      condition: "edit",
+      condition: "readOnly",
       callback: function (t) {
         return t.popup({
           title: "iWE - Release",
