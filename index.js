@@ -89,15 +89,14 @@ TrelloPowerUp.initialize({
       });
   },
 
-  "board-buttons": function () {
+  "board-buttons": function (t) {
     return [{
       icon: {
         dark: IWE_LOGO,
         light: IWE_LOGO
       },
       text: "iWE - Release",
-      condition: "salut",
-      callback: function (t) {
+      callback: function () {
         return t.popup({
           title: "iWE - Release",
           url: 'release.html',
