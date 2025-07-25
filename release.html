@@ -31,7 +31,7 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: { releaseNumber }
+            body: JSON.stringify({ releaseNumber })
           });
 
           if (response.ok) {
