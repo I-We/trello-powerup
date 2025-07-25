@@ -96,7 +96,7 @@ TrelloPowerUp.initialize({
         light: IWE_LOGO
       },
       text: "iWE - Release",
-      condition: "signedIn",
+      condition: "salut",
       callback: function (t) {
         return t.popup({
           title: "iWE - Release",
