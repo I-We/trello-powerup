@@ -4,6 +4,7 @@
     "author": "Your Name",
     "version": "1.0",
     "capabilities": [
+      "board-buttons",
       "card-buttons",
       "card-back-section"
     ],
