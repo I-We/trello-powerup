@@ -88,6 +88,20 @@ TrelloPowerUp.initialize({
         }} : {})}));
       });
   },
+
+  "board-buttons": function () {
+    return [{
+      icon: IWE_LOGO,
+      text: "iWE - Release",
+      condition: "edit",
+      callback: function (t) {
+        return t.popup({
+          title: "iWE - Release",
+          url: 'release.html',
+        });
+      }
+    }]
+  }
 });
 
 // Helper function to get custom field value
