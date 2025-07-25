@@ -91,7 +91,10 @@ TrelloPowerUp.initialize({
 
   "board-buttons": function () {
     return [{
-      icon: IWE_LOGO,
+      icon: {
+        dark: IWE_LOGO,
+        light: IWE_LOGO
+      },
       text: "iWE - Release",
       condition: "signedIn",
       callback: function (t) {
