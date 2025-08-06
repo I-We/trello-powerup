@@ -37,7 +37,7 @@ TrelloPowerUp.initialize({
         const isBugfix = labels.some((label) => label.name.includes('Bug') || label.name.includes('HotFix'));
         const isRelease = labels.some((label) => label.name.includes('Release'));
 
-        const releaseNoteAttachment = attachments.find((attachment) => attachment.name.contains("Release note"));
+        const releaseNoteAttachment = attachments.find((attachment) => attachment.name.includes("Release note"));
 
         const shouldShowReleaseRegenButton = isRelease && releaseNoteAttachment;
 
@@ -53,7 +53,7 @@ TrelloPowerUp.initialize({
           generatePatchedVersionsButton(branchName),
           generateLaunchPipelinesButton(branchName),
           generateReleaseDocumentButton(branchName, id, title, isBugfix, myTickets),
-          shouldShowReleaseRegenButton && generateReleaseRegenButton(id, releaseNoteAttachment)
+          shouldShowReleaseRegenButton && generateReleaseUpdateButton(id, releaseNoteAttachment)
       ]);
 
         return buttons.filter(Boolean);
