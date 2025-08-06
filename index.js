@@ -5,7 +5,7 @@ const IWE_LOGO =
 TrelloPowerUp.initialize({
   "card-buttons": function (t, options) {
     return t
-      .card("customFieldItems", "id", "members", "url", "name", "labels")
+      .card("customFieldItems", "id", "members", "url", "name", "labels", "attachments")
       .then(async function ({
         customFieldItems,
         id,
@@ -35,6 +35,11 @@ TrelloPowerUp.initialize({
         const myTickets = platformMyTickets || deliveryMyTickets;
 
         const isBugfix = labels.some((label) => label.name.includes('Bug') || label.name.includes('HotFix'));
+        const isRelease = labels.some((label) => label.name.includes('Release'));
+
+        const releaseNoteAttachment = attachments.find((attachment) => attachment.name.contains("Release note"));
+
+        const shouldShowReleaseRegenButton = isRelease && releaseNoteAttachment;
 
         const buttons = await Promise.all([
           generateBranchNameButton(branchName, t),
@@ -47,7 +52,8 @@ TrelloPowerUp.initialize({
           ),
           generatePatchedVersionsButton(branchName),
           generateLaunchPipelinesButton(branchName),
-          generateReleaseDocumentButton(branchName, id, title, isBugfix, myTickets)
+          generateReleaseDocumentButton(branchName, id, title, isBugfix, myTickets),
+          shouldShowReleaseRegenButton && generateReleaseRegenButton(id, releaseNoteAttachment)
       ]);
 
         return buttons.filter(Boolean);
@@ -268,6 +274,26 @@ async function generateLaunchPipelinesButton(branchName) {
       return t.popup({
         title: "iWE - Jenkins",
         url: `jenkins.html?branch=${branchName}&repositories=${repositories.map((item) => item.repository).join(',')}`,
+      });
+    },
+  };
+}
+
+async function generateReleaseUpdateButton(id, releaseNoteAttachment) {
+  const body = { trelloCardId: id, releaseNoteAttachmentId: releaseNoteAttachment.id, releaseNoteUrl: releaseNoteAttachment.url }
+  const endpoint = `https://n8n.tools.i-we.io/webhook/release-update`;
+
+  return {
+    icon: IWE_LOGO,
+    text: "iWE - Release update",
+    callback: async function (t) {
+      fetch(endpoint, { method: "POST", body: JSON.stringify(body)}).then(() => {
+        return t.alert({message: "Release note has been updated !"});
+      }).catch(() => {
+        return t.alert({message: "Something went wrong when updating release note"});
+      });
+      return t.alert({
+        message: "Release note is being updated, this will take 30 seconds max...",
       });
     },
   };
