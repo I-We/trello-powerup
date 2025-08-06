@@ -12,7 +12,8 @@ TrelloPowerUp.initialize({
         members,
         url,
         name: title,
-        labels
+        labels,
+        attachments
       }) {
         const platformBranchName = getCustomFieldValue(
           customFieldItems,
