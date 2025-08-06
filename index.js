@@ -27,10 +27,6 @@ TrelloPowerUp.initialize({
 
         const branchName = platformBranchName || deliveryBranchName;
 
-        if (!branchName) {
-          return null;
-        }
-
         const platformMyTickets = getCustomFieldValue(customFieldItems, '6593ebbb699e895d318adbfa')?.replace(' ', '') ?? '';
         const deliveryMyTickets = getCustomFieldValue(customFieldItems, '678f661e6b95b0f4b69998c7')?.replace(' ', '') ?? '';
         const myTickets = platformMyTickets || deliveryMyTickets;
@@ -43,17 +39,17 @@ TrelloPowerUp.initialize({
         const shouldShowReleaseRegenButton = isRelease && releaseNoteAttachment;
 
         const buttons = await Promise.all([
-          generateBranchNameButton(branchName, t),
-          generateCreateMergeRequestsButton(
+          branchName && generateBranchNameButton(branchName, t),
+          branchName && generateCreateMergeRequestsButton(
             branchName,
             id,
             members[0].fullName,
             url,
             title
           ),
-          generatePatchedVersionsButton(branchName),
-          generateLaunchPipelinesButton(branchName),
-          generateReleaseDocumentButton(branchName, id, title, isBugfix, myTickets),
+          branchName && generatePatchedVersionsButton(branchName),
+          branchName && generateLaunchPipelinesButton(branchName),
+          branchName && generateReleaseDocumentButton(branchName, id, title, isBugfix, myTickets),
           shouldShowReleaseRegenButton && generateReleaseUpdateButton(id, releaseNoteAttachment)
       ]);
 
