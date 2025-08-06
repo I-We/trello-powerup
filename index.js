@@ -283,7 +283,7 @@ async function generateReleaseUpdateButton(id, releaseNoteAttachment) {
   return {
     icon: IWE_LOGO,
     text: "iWE - Release update",
-    callback: async function (t) {
+    callback: function (t) {
       fetch(endpoint, { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)}).then(() => {
         return t.alert({message: "Release note has been updated !"});
       }).catch(() => {
