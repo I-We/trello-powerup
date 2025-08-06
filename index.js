@@ -35,6 +35,7 @@ TrelloPowerUp.initialize({
         const isRelease = labels.some((label) => label.name.includes('Release'));
 
         const releaseNoteAttachment = attachments.find((attachment) => attachment.name.includes("Release note"));
+        const releaseNumber = releaseNoteAttachment?.name.split(' ')[2];
 
         const shouldShowReleaseRegenButton = isRelease && releaseNoteAttachment;
 
@@ -50,7 +51,7 @@ TrelloPowerUp.initialize({
           branchName && generatePatchedVersionsButton(branchName),
           branchName && generateLaunchPipelinesButton(branchName),
           branchName && generateReleaseDocumentButton(branchName, id, title, isBugfix, myTickets),
-          shouldShowReleaseRegenButton && generateReleaseUpdateButton(id, releaseNoteAttachment)
+          shouldShowReleaseRegenButton && generateReleaseUpdateButton(id, releaseNoteAttachment, releaseNumber)
       ]);
 
         return buttons.filter(Boolean);
@@ -276,8 +277,8 @@ async function generateLaunchPipelinesButton(branchName) {
   };
 }
 
-async function generateReleaseUpdateButton(id, releaseNoteAttachment) {
-  const body = { trelloCardId: id, releaseNoteAttachmentId: releaseNoteAttachment.id, releaseNoteUrl: releaseNoteAttachment.url }
+async function generateReleaseUpdateButton(id, releaseNoteAttachment, releaseNumber) {
+  const body = { trelloCardId: id, releaseNoteAttachmentId: releaseNoteAttachment.id, releaseNoteUrl: releaseNoteAttachment.url, releaseNumber }
   const endpoint = `https://n8n.tools.i-we.io/webhook/release-update`;
 
   return {
