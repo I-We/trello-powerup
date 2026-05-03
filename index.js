@@ -41,15 +41,13 @@ TrelloPowerUp.initialize({
 
         const buttons = await Promise.all([
           branchName && generateBranchNameButton(branchName, t),
-          branchName && generateCreateMergeRequestsButton(
+          branchName && members[0] && generateCreateMergeRequestsButton(
             branchName,
             id,
             members[0].fullName,
             url,
             title
           ),
-          branchName && generatePatchedVersionsButton(branchName),
-          branchName && generateLaunchPipelinesButton(branchName),
           branchName && generateReleaseDocumentButton(branchName, id, title, isBugfix, myTickets),
           shouldShowReleaseRegenButton && generateReleaseUpdateButton(id, releaseNoteAttachment, releaseNumber)
       ]);
@@ -194,37 +192,6 @@ async function generateFtBadge(branchName, url, name) {
   return badges;
 }
 
-// Helper function to generate patched versions button
-async function generatePatchedVersionsButton(branchName) {
-  const params = new URLSearchParams({
-    branch: branchName,
-  });
-  const response = await fetch(
-    sanitize(
-      `https://n8n.tools.i-we.io/webhook/patched-versions?${params.toString()}`
-    )
-  );
-  const {patchedVersions} = await response.json();
-
-  return {
-    icon: IWE_LOGO,
-    text: 'iWE - Patched Versions',
-    callback: (t) => {
-      window
-        .open(
-          sanitize(
-            `https://i-we.github.io/trello-powerup/copy-and-close.html?value=${patchedVersions}`
-          ),
-          "_blank"
-        )
-        .focus();
-      return t.alert({
-        message: "Patched versions have been copied to your clipboard!",
-      });
-    }
-  }
-}
-
 async function generateCreateMergeRequestsButton(
   branchName,
   id,
@@ -260,22 +227,6 @@ function sanitize(str) {
   return str.replace(/%E2%80%8C/g, "").trim();
 }
 
-async function generateLaunchPipelinesButton(branchName) {
-  const params = new URLSearchParams({branch: branchName});
-  const response = await fetch(`https://n8n.tools.i-we.io/webhook/bouton-jenkins?${params.toString()}`);
-  const repositories = await response.json();
-
-  return {
-    icon: IWE_LOGO,
-    text: "iWE - Jenkins",
-    callback: function (t) {
-      return t.popup({
-        title: "iWE - Jenkins",
-        url: `jenkins.html?branch=${branchName}&repositories=${repositories.map((item) => item.repository).join(',')}`,
-      });
-    },
-  };
-}
 
 async function generateReleaseUpdateButton(id, releaseNoteAttachment, releaseNumber) {
   const body = { trelloCardId: id, releaseNoteAttachmentId: releaseNoteAttachment.id, releaseNoteUrl: releaseNoteAttachment.url, releaseNumber }
